@@ -1,19 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sun, Moon, Menu, X, User, Globe, Train } from "lucide-react";
+import { Sun, Moon, Menu, X, User, Globe } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
-
-const navLinks = [
-  { label: "Book Ticket",  href: "#booking" },
-  { label: "PNR Status",  href: "#booking" },
-  { label: "Train Schedule", href: "#" },
-  { label: "Tourism",    href: "#services" },
-  { label: "eCatering",  href: "#services" },
-  { label: "Help",       href: "#" },
-];
+import { useLang } from "@/i18n/LanguageProvider";
+import LiveClock from "./LiveClock";
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
+  const { lang, t, toggleLang } = useLang();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -22,6 +16,15 @@ export default function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const navLinks = [
+    { label: t.bookTicket,    href: "#booking" },
+    { label: t.pnrStatus,     href: "#booking" },
+    { label: t.trainSchedule, href: "#" },
+    { label: t.tourism,       href: "#services" },
+    { label: t.eCatering,     href: "#services" },
+    { label: t.help,          href: "#" },
+  ];
 
   return (
     <>
@@ -34,12 +37,12 @@ export default function Navbar() {
 
             {/* Logo */}
             <a href="#" className="flex items-center gap-2.5 group no-underline">
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center"
-                style={{ background: "var(--clr-primary)" }}
-              >
-                <Train className="w-5 h-5 text-white" />
-              </div>
+              <img
+                src="/irctc-logo.png"
+                alt="IRCTC Logo"
+                className="h-10 w-auto object-contain"
+                style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.15))" }}
+              />
               <div className="flex flex-col">
                 <span
                   className="text-base font-bold tracking-tight leading-none"
@@ -51,7 +54,7 @@ export default function Navbar() {
                   className="text-[9px] tracking-[0.1em] uppercase font-medium"
                   style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
                 >
-                  Indian Railways
+                  {t.indianRailways}
                 </span>
               </div>
             </a>
@@ -71,8 +74,13 @@ export default function Navbar() {
 
             {/* Right Actions */}
             <div className="flex items-center gap-2">
-              <button
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-all"
+              {/* Live Clock */}
+              <LiveClock />
+
+              {/* Language Toggle — EN/HI */}
+              <motion.button
+                onClick={toggleLang}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-all cursor-pointer"
                 style={{
                   fontFamily: "var(--font-ui)",
                   color: "var(--clr-muted)",
@@ -87,11 +95,25 @@ export default function Navbar() {
                   e.currentTarget.style.color = "var(--clr-muted)";
                   e.currentTarget.style.borderColor = "var(--clr-border)";
                 }}
-                aria-label="Language"
+                whileTap={{ scale: 0.92 }}
+                aria-label="Toggle Language"
               >
-                <Globe className="w-3.5 h-3.5" />EN
-              </button>
+                <Globe className="w-3.5 h-3.5" />
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={lang}
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    transition={{ duration: 0.15 }}
+                    style={{ fontWeight: 600 }}
+                  >
+                    {lang === "en" ? "EN" : "हि"}
+                  </motion.span>
+                </AnimatePresence>
+              </motion.button>
 
+              {/* Theme toggle */}
               <button
                 onClick={toggleTheme}
                 className="w-8 h-8 flex items-center justify-center rounded-md transition-all"
@@ -107,6 +129,7 @@ export default function Navbar() {
                 )}
               </button>
 
+              {/* Login */}
               <button
                 className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md text-white transition-all cursor-pointer border-none"
                 style={{
@@ -120,9 +143,10 @@ export default function Navbar() {
                   e.currentTarget.style.background = "var(--clr-primary)";
                 }}
               >
-                <User className="w-4 h-4" />Login
+                <User className="w-4 h-4" />{t.login}
               </button>
 
+              {/* Mobile menu toggle */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="lg:hidden w-8 h-8 flex items-center justify-center rounded-md transition-colors"
@@ -178,7 +202,7 @@ export default function Navbar() {
                     className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-lg text-white cursor-pointer border-none"
                     style={{ fontFamily: "var(--font-ui)", background: "var(--clr-primary)" }}
                   >
-                    <User className="w-4 h-4" />Login / Register
+                    <User className="w-4 h-4" />{t.loginRegister}
                   </button>
                 </div>
               </div>

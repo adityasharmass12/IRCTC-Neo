@@ -1,4 +1,5 @@
 import { Mail, Phone, MapPin, ExternalLink, Train } from "lucide-react";
+import { useLang } from "@/i18n/LanguageProvider";
 
 const quickLinks = [
   { label: "Book Train Ticket",  href: "#booking" },
@@ -23,10 +24,10 @@ const policies = [
 ];
 
 export default function Footer() {
+  const { t } = useLang();
+
   return (
     <footer className="relative z-10 mt-6">
-      <div className="tricolor-bar" />
-
       <div
         style={{
           background: "var(--clr-surface)",
@@ -64,7 +65,7 @@ export default function Footer() {
                 className="text-sm leading-relaxed mb-5"
                 style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
               >
-                Official IRCTC partner portal for train ticket booking, PNR tracking, tourism packages, and rail services across India.
+                {t.footerDesc}
               </p>
               <div className="space-y-2.5">
                 <a
@@ -75,7 +76,7 @@ export default function Footer() {
                   onMouseLeave={(e) => (e.currentTarget.style.color = "var(--clr-muted)")}
                 >
                   <Phone className="w-3.5 h-3.5" />
-                  <span>Helpline: 14646</span>
+                  <span>{t.helpline}</span>
                 </a>
                 <a
                   href="mailto:care@irctc.co.in"
@@ -99,9 +100,9 @@ export default function Footer() {
 
             {/* Link columns */}
             {[
-              { title: "Quick Links", items: quickLinks },
-              { title: "Services",    items: services },
-              { title: "Policies",    items: policies },
+              { title: t.quickLinks, items: quickLinks },
+              { title: t.services,   items: services },
+              { title: t.policies,   items: policies },
             ].map((col) => (
               <div key={col.title}>
                 <h4
@@ -143,11 +144,11 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-3">
               <span className="text-xs" style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}>
-                A Government of India Enterprise
+                {t.govtEnterprise}
               </span>
               <span className="w-1 h-1 rounded-full" style={{ background: "var(--clr-primary)" }} />
               <span className="text-xs" style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}>
-                Ministry of Railways
+                {t.ministryRailways}
               </span>
             </div>
           </div>

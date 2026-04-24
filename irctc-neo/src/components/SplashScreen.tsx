@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Train } from "lucide-react";
 
 export default function SplashScreen({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0);
@@ -35,18 +34,20 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {/* Tricolor bar */}
-          <div className="tricolor-bar absolute top-0 left-0 right-0" />
-
           {/* Logo mark */}
           <motion.div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
-            style={{ background: "var(--clr-primary)" }}
+            className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 overflow-hidden"
+            style={{ background: "transparent" }}
             initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <Train className="w-8 h-8 text-white" />
+            <img
+              src="/irctc-logo.png"
+              alt="IRCTC Logo"
+              className="w-full h-full object-contain"
+              style={{ filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))" }}
+            />
           </motion.div>
 
           {/* Brand text */}

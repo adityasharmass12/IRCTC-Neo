@@ -1,12 +1,14 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { LanguageProvider, useLang } from "@/i18n/LanguageProvider";
 import Navbar from "@/components/Navbar";
 import BookingEngine from "@/components/BookingEngine";
 import LiveAlerts from "@/components/LiveAlerts";
 import AncillaryServices from "@/components/AncillaryServices";
 import Footer from "@/components/Footer";
 import SplashScreen from "@/components/SplashScreen";
+import InteractiveHeading from "@/components/InteractiveHeading";
 
 // ── Counter hook ────────────────────────────────────────
 function useCounter(target: number, duration = 1500, start = false) {
@@ -60,16 +62,18 @@ function StatCounter({ value, suffix, label }: { value: number; suffix: string; 
   );
 }
 
-export default function App() {
+// ── Main App Content (needs language context) ────────────
+function AppContent() {
   const [splashDone, setSplashDone] = useState(false);
   const handleSplashComplete = useCallback(() => setSplashDone(true), []);
+  const { t } = useLang();
 
   // Parallax scrolling for hero background
   const { scrollY } = useScroll();
   const bgY = useTransform(scrollY, [0, 800], [0, 200]);
 
   return (
-    <ThemeProvider>
+    <>
       {!splashDone && <SplashScreen onComplete={handleSplashComplete} />}
 
       <div className={`transition-opacity duration-700 ${splashDone ? "opacity-100" : "opacity-0"}`}>
@@ -128,18 +132,15 @@ export default function App() {
                   className="w-1.5 h-1.5 rounded-full animate-pulse"
                   style={{ background: "var(--clr-primary)" }}
                 />
-                Official IRCTC Partner Portal
+                {t.badgeText}
               </motion.div>
 
-              {/* Main Heading — Shimmer Gradient */}
-              <h1
-                className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.08] hero-text-shadow"
-                style={{ fontFamily: "var(--font-heading)" }}
-              >
-                Your Train Journey,
-                <br />
-                <span className="shimmer-text">Effortlessly Booked</span>
-              </h1>
+              {/* Main Heading — Interactive Wave + Parallax Shadow */}
+              <InteractiveHeading
+                line1={t.heroLine1}
+                line2={t.heroLine2}
+                className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.08] cinematic-heading"
+              />
 
               {/* Subheading */}
               <motion.p
@@ -149,7 +150,7 @@ export default function App() {
                 animate={splashDone ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: 0.6 }}
               >
-                Search schedules, check seat availability, book tickets, and track PNR — all from one place. Powered by Indian Railways.
+                {t.heroSub}
               </motion.p>
             </motion.div>
 
@@ -181,11 +182,11 @@ export default function App() {
               transition={{ duration: 0.6, delay: 1.0 }}
             >
               <div className="card-flat rounded-2xl p-3 grid grid-cols-3 gap-2">
-                <StatCounter value={14000} suffix="+" label="Daily Trains" />
+                <StatCounter value={14000} suffix="+" label={t.dailyTrains} />
                 <div style={{ borderLeft: "1px solid var(--clr-border)", borderRight: "1px solid var(--clr-border)" }}>
-                  <StatCounter value={8000000} suffix="+" label="Passengers/Day" />
+                  <StatCounter value={8000000} suffix="+" label={t.passengersDay} />
                 </div>
-                <StatCounter value={7000} suffix="+" label="Stations" />
+                <StatCounter value={7000} suffix="+" label={t.stations} />
               </div>
             </motion.div>
 
@@ -200,7 +201,7 @@ export default function App() {
                 className="text-[10px] uppercase tracking-[0.25em] font-medium"
                 style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
               >
-                Explore Services
+                {t.exploreServices}
               </span>
               <motion.div
                 className="w-5 h-8 rounded-full border-2 flex items-start justify-center p-1"
@@ -228,6 +229,16 @@ export default function App() {
           © {new Date().getFullYear()} IRCTC — Indian Railway Catering and Tourism Corporation Ltd. · A Government of India Enterprise
         </p>
       </div>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <LanguageProvider>
+        <AppContent />
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

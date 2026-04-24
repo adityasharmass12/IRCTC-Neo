@@ -8,14 +8,17 @@ import {
 import { stations, trainClasses, quotas, recentSearches, trainResults, type Station, type TrainResult } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 import SearchResults from "./SearchResults";
+import { useLang } from "@/i18n/LanguageProvider";
+import AmbientButton from "./AmbientButton";
 
 // ── Types ──────────────────────────────────────────────
-const tabs = [
-  { id: "book",   label: "Book Ticket",       icon: Search    },
-  { id: "pnr",    label: "PNR Status",       icon: FileSearch },
-  { id: "charts", label: "Charts / Vacancy",  icon: BarChart3 },
-] as const;
-type TabId = (typeof tabs)[number]["id"];
+const tabIds = ["book", "pnr", "charts"] as const;
+type TabId = (typeof tabIds)[number];
+const tabIcons: Record<TabId, typeof Search> = {
+  book: Search,
+  pnr: FileSearch,
+  charts: BarChart3,
+};
 
 // ── Toast system ──────────────────────────────────────
 interface Toast { id: number; message: string; type: "success" | "error" | "info"; }
@@ -309,6 +312,14 @@ export default function BookingEngine() {
   const [swapRotated, setSwapRotated]  = useState(false);
   const [dateFocused, setDateFocused] = useState(false);
   const { toasts, show: showToast, remove: removeToast } = useToasts();
+  const { t } = useLang();
+
+  // Build tabs array from translations
+  const tabs = [
+    { id: "book" as TabId,   label: t.bookTicket,     icon: tabIcons.book    },
+    { id: "pnr" as TabId,    label: t.pnrStatus,      icon: tabIcons.pnr     },
+    { id: "charts" as TabId, label: t.chartsVacancy,   icon: tabIcons.charts  },
+  ];
 
   // Mouse spotlight
   const spotlight = useSpotlight();
@@ -421,10 +432,10 @@ export default function BookingEngine() {
                   {/* Row 1: From / Swap / To */}
                   <div className="flex flex-col lg:flex-row gap-3 items-stretch">
                     <StationInput
-                      label="From"
+                      label={t.from}
                       value={from}
                       onChange={(val) => setFrom(val)}
-                      placeholder="Departure Station"
+                      placeholder={t.departureStation}
                       id="station-from"
                     />
 
@@ -442,10 +453,10 @@ export default function BookingEngine() {
                     </div>
 
                     <StationInput
-                      label="To"
+                      label={t.to}
                       value={to}
                       onChange={(val) => setTo(val)}
-                      placeholder="Destination Station"
+                      placeholder={t.destinationStation}
                       id="station-to"
                     />
                   </div>
@@ -464,7 +475,7 @@ export default function BookingEngine() {
                         animate={{ scale: dateFocused ? 1.02 : 1 }}
                         transition={{ duration: 0.2 }}
                       >
-                        Date
+                        {t.date}
                       </motion.label>
                       <div className="relative group">
                         <Calendar
@@ -484,14 +495,14 @@ export default function BookingEngine() {
                       </div>
                     </div>
                     <CustomSelect
-                      label="Class"
+                      label={t.class}
                       value={trainClass}
                       onChange={setTrainClass}
                       options={trainClasses}
                       id="train-class"
                     />
                     <CustomSelect
-                      label="Quota"
+                      label={t.quota}
                       value={quota}
                       onChange={setQuota}
                       options={quotas}
@@ -507,7 +518,7 @@ export default function BookingEngine() {
                       style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
                     >
                       {advancedOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                      Advanced Options
+                      {t.advancedOptions}
                     </button>
                     <AnimatePresence>
                       {advancedOpen && (
@@ -520,9 +531,9 @@ export default function BookingEngine() {
                         >
                           <div className="pt-3 pb-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
                             {[
-                              { icon: Accessibility, label: "Divyaang Concession" },
-                              { icon: CreditCard,    label: "Railway Pass"        },
-                              { icon: Users,         label: "Flexible with Date"  },
+                              { icon: Accessibility, label: t.divyaangConcession },
+                              { icon: CreditCard,    label: t.railwayPass        },
+                              { icon: Users,         label: t.flexibleDate       },
                             ].map(({ icon: Icon, label }) => (
                               <label
                                 key={label}
@@ -550,7 +561,7 @@ export default function BookingEngine() {
                       className="text-[11px] font-semibold uppercase tracking-wider self-center"
                       style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
                     >
-                      Quick:
+                      {t.quick}
                     </span>
                     {routeChips.map((chip) => (
                       <motion.button
@@ -601,15 +612,12 @@ export default function BookingEngine() {
                     ))}
                   </div>
 
-                  {/* CTA: Search Trains */}
+                  {/* CTA: Search Trains — Ambient Glow Button */}
                   <div className="mt-6">
-                    <motion.button
+                    <AmbientButton
                       onClick={handleSearch}
                       disabled={isSearching}
-                      className="search-btn"
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      whileTap={{ scale: 0.98 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                      tooltipText={t.searchTrains === "ट्रेन खोजें" ? "उपलब्ध ट्रेनों की खोज करें" : "Find available trains on your route"}
                     >
                       {isSearching ? (
                         <motion.div
@@ -620,10 +628,10 @@ export default function BookingEngine() {
                       ) : (
                         <>
                           <Sparkles className="w-4 h-4" />
-                          <span>Search Trains</span>
+                          <span>{t.searchTrains}</span>
                         </>
                       )}
-                    </motion.button>
+                    </AmbientButton>
                   </div>
                 </motion.div>
               )}
@@ -643,7 +651,7 @@ export default function BookingEngine() {
                       className="block text-[11px] font-semibold mb-1.5 uppercase tracking-[0.12em]"
                       style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
                     >
-                      PNR Number
+                      {t.pnrNumber}
                     </label>
                     <div className="relative group">
                       <FileSearch
@@ -657,7 +665,7 @@ export default function BookingEngine() {
                         onChange={(e) =>
                           setPnrNumber(e.target.value.replace(/\D/g, "").slice(0, 10))
                         }
-                        placeholder="Enter 10-digit PNR Number"
+                        placeholder={t.enterPnr}
                         maxLength={10}
                         className="input-field"
                         style={{
@@ -689,27 +697,26 @@ export default function BookingEngine() {
                       className="text-xs mt-3"
                       style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
                     >
-                      Enter your 10-digit PNR number to check booking status, coach position, and chart preparation status.
+                      {t.pnrHelper}
                     </p>
-                    <motion.button
-                      onClick={handlePnr}
-                      disabled={isSearching}
-                      className="search-btn mt-4"
-                      style={{ maxWidth: "200px" }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {isSearching ? (
-                        <motion.div
-                          className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full"
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        />
-                      ) : (
-                        <Search className="w-4 h-4" />
-                      )}
-                      {isSearching ? "Checking..." : "Check PNR Status"}
-                    </motion.button>
+                    <div className="mt-4" style={{ maxWidth: "220px" }}>
+                      <AmbientButton
+                        onClick={handlePnr}
+                        disabled={isSearching}
+                        tooltipText={t.checkPnrStatus === "PNR स्थिति जांचें" ? "अपने PNR की स्थिति देखें" : "Check your booking and berth details"}
+                      >
+                        {isSearching ? (
+                          <motion.div
+                            className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          />
+                        ) : (
+                          <Search className="w-4 h-4" />
+                        )}
+                        {isSearching ? t.checking : t.checkPnrStatus}
+                      </AmbientButton>
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -729,7 +736,7 @@ export default function BookingEngine() {
                       className="block text-[11px] font-semibold mb-1.5 uppercase tracking-[0.12em]"
                       style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
                     >
-                      Train Number / Name
+                      {t.trainNumberName}
                     </label>
                     <div className="relative group">
                       <BarChart3
@@ -741,7 +748,7 @@ export default function BookingEngine() {
                         type="text"
                         value={trainNumber}
                         onChange={(e) => setTrainNumber(e.target.value)}
-                        placeholder="e.g. 12301 or Rajdhani"
+                        placeholder={t.trainNumberPlaceholder}
                         className="input-field"
                         style={{ fontFamily: "var(--font-ui)", paddingLeft: "44px" }}
                       />
@@ -752,7 +759,7 @@ export default function BookingEngine() {
                         className="block text-[11px] font-semibold mb-1.5 uppercase tracking-[0.12em]"
                         style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
                       >
-                        Journey Date
+                        {t.journeyDate}
                       </label>
                       <div className="relative group">
                         <Calendar
@@ -770,27 +777,26 @@ export default function BookingEngine() {
                       </div>
                     </div>
                     <p className="text-xs mt-3" style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}>
-                      Check chart preparation status, seat vacancy, and current booking status for any train.
+                      {t.chartsHelper}
                     </p>
-                    <motion.button
-                      onClick={handleVacancy}
-                      disabled={isSearching}
-                      className="search-btn mt-4"
-                      style={{ maxWidth: "200px" }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {isSearching ? (
-                        <motion.div
-                          className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full"
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        />
-                      ) : (
-                        <BarChart3 className="w-4 h-4" />
-                      )}
-                      {isSearching ? "Checking..." : "Check Vacancy"}
-                    </motion.button>
+                    <div className="mt-4" style={{ maxWidth: "220px" }}>
+                      <AmbientButton
+                        onClick={handleVacancy}
+                        disabled={isSearching}
+                        tooltipText={t.checkVacancy === "उपलब्धता जांचें" ? "सीट उपलब्धता देखें" : "View seat availability and chart status"}
+                      >
+                        {isSearching ? (
+                          <motion.div
+                            className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          />
+                        ) : (
+                          <BarChart3 className="w-4 h-4" />
+                        )}
+                        {isSearching ? t.checking : t.checkVacancy}
+                      </AmbientButton>
+                    </div>
                   </div>
                 </motion.div>
               )}

@@ -5,6 +5,7 @@ import {
   ArrowUpRight, type LucideIcon
 } from "lucide-react";
 import { features } from "@/data/mockData";
+import { useLang } from "@/i18n/LanguageProvider";
 
 const iconMap: Record<string, LucideIcon> = {
   Utensils, Bed, Map, Wallet, Shield, Package
@@ -94,6 +95,8 @@ function TiltCard({
 }
 
 export default function AncillaryServices() {
+  const { t } = useLang();
+
   return (
     <section id="services" className="relative z-10 py-16 sm:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -126,13 +129,13 @@ export default function AncillaryServices() {
             className="text-2xl sm:text-3xl lg:text-4xl font-bold hero-text-shadow"
             style={{ fontFamily: "var(--font-heading)", color: "var(--clr-heading)" }}
           >
-            Services Beyond the Journey
+            {t.servicesBeyond}
           </h2>
           <p
             className="mt-4 text-sm sm:text-base max-w-xl mx-auto hero-sub-shadow"
             style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
           >
-            IRCTC offers a range of travel and lifestyle services designed to make every journey more comfortable and convenient.
+            {t.servicesDesc}
           </p>
         </motion.div>
 
