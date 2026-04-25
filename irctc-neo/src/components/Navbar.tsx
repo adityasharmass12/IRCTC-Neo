@@ -4,12 +4,14 @@ import { Sun, Moon, Menu, X, User, Globe } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { useLang } from "@/i18n/LanguageProvider";
 import LiveClock from "./LiveClock";
+import LoginModal from "./LoginModal";
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const { lang, t, toggleLang } = useLang();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -136,6 +138,7 @@ export default function Navbar() {
                   fontFamily: "var(--font-ui)",
                   background: "var(--clr-primary)",
                 }}
+                onClick={() => setLoginOpen(true)}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = "var(--clr-accent)";
                 }}
@@ -201,6 +204,7 @@ export default function Navbar() {
                   <button
                     className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-lg text-white cursor-pointer border-none"
                     style={{ fontFamily: "var(--font-ui)", background: "var(--clr-primary)" }}
+                    onClick={() => { setMobileOpen(false); setLoginOpen(true); }}
                   >
                     <User className="w-4 h-4" />{t.loginRegister}
                   </button>
@@ -210,6 +214,7 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+      <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} />
     </>
   );
 }
