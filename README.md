@@ -51,11 +51,11 @@ The project is split into two parts — a React frontend that handles everything
 
 | What | Technology |
 |---|---|
-| Framework | React 19 |
-| Language | TypeScript 6 |
-| Build tool | Vite 8 |
-| Styling | Tailwind CSS v4 |
-| Animations | Framer Motion 12 |
+| Framework | React |
+| Language | TypeScript |
+| Build tool | Vite |
+| Styling | Tailwind CSS |
+| Animations | Framer Motion |
 | Icons | Lucide React |
 | Fonts | Outfit, Plus Jakarta Sans, JetBrains Mono (Google Fonts) |
 
