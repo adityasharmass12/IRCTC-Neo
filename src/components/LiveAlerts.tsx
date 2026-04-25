@@ -47,7 +47,7 @@ export default function LiveAlerts() {
         </div>
         {}
         <div
-          className="rounded-lg overflow-hidden"
+          className="relative rounded-lg overflow-hidden"
           style={{
             background: "var(--clr-card-bg)",
             border: "1px solid var(--clr-border)",

@@ -1,174 +1,146 @@
-<div align="center">
+# IRCTC Neo
 
-# 🚆 IRCTC Neo — Premium Redesign
+A redesign concept for the IRCTC railway booking platform. The goal was to take one of the most used but visually outdated websites in India and rebuild it with a modern interface, smooth interactions, and a proper full-stack setup — while keeping all the core functionality intact.
 
-**A cinematic, high-fidelity redesign of India's railway booking platform**
-
-Built with React 19 · Vite · Framer Motion · Tailwind CSS v4
-
-[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev)
-[![Framer Motion](https://img.shields.io/badge/Framer_Motion-12-FF0050?logo=framer&logoColor=white)](https://motion.dev)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-
-</div>
+This is a portfolio project. It is not affiliated with IRCTC or Indian Railways in any way, and no real bookings or payments are processed.
 
 ---
 
-![Hero Section — Dark Mode](screenshots/hero-dark.png)
+## What is this project
 
-## ✨ Overview
+IRCTC is India's official railway booking portal used by millions of people daily. The existing platform works, but the UI is cluttered and the experience is dated. This project is a ground-up redesign that keeps the same features but presents them in a much cleaner, faster, and more enjoyable interface.
 
-**IRCTC Neo** is a conceptual, premium-grade redesign of the Indian Railway Catering and Tourism Corporation's booking portal. This project reimagines the official IRCTC platform with a cinematic visual identity, fluid micro-animations, and a world-class user experience — while faithfully preserving all the core booking functionality.
-
-> ⚠️ **Disclaimer:** This is a UI/UX concept project for educational and portfolio purposes only. It is not affiliated with or endorsed by IRCTC or Indian Railways. No real booking functionality is implemented.
+The project is split into two parts — a React frontend that handles everything the user sees, and a Django backend that handles authentication. The frontend works on its own with mock data, so the backend is only needed if you want the login and registration to actually function.
 
 ---
 
-## 🖼️ Screenshots
+## Features
 
-<details open>
-<summary><strong>🌙 Dark Mode</strong></summary>
+**Booking**
+- Search trains between any two stations with a live autocomplete dropdown that searches by station name, code, or city
+- Filter results by train type (Rajdhani, Shatabdi, Express, etc.) and sort by departure time or price
+- View seat availability per class with availability badges (Available, RAC, Waitlist, Sold Out)
+- Quick route chips for popular city pairs so you can load a route in one click
+- Recent searches are saved and shown as chips below the search form
+- Advanced options panel for Divyaang concession, Railway Pass, and Flexible Date
 
-|  Hero Section  |  Services  |
-|:-:|:-:|
-| ![Hero Dark](screenshots/hero-dark.png) | ![Services](screenshots/services-dark.png) |
+**PNR and Charts**
+- PNR status checker with a 10-digit input and an animated progress indicator
+- Charts and vacancy lookup by train number and journey date
 
-</details>
+**Authentication**
+- Login with a real JWT-based backend — tokens are stored locally and used for authenticated requests
+- Registration form with server-side validation and proper error messages shown per field
+- Agent login flow with a confirmation screen and a 6-digit OTP input
+- The login modal transitions smoothly between all these states without any layout jumps
 
-<details open>
-<summary><strong>☀️ Light Mode</strong></summary>
-
-| Hero Section |
-|:-:|
-| ![Hero Light](screenshots/hero-light.png) |
-
-</details>
-
-<details open>
-<summary><strong>🔐 Multi-Step Authentication Modal</strong></summary>
-
-| State 1: Login | State 2: Agent Confirm | State 3: Agent OTP |
-|:-:|:-:|:-:|
-| ![Login](screenshots/login-state1.png) | ![Agent Confirm](screenshots/login-state2.png) | ![Agent OTP](screenshots/login-state3.png) |
-
-</details>
-
----
-
-## 🎯 Key Features
-
-### 🎨 Visual Design
-- **Cinematic Hero** — Full-bleed Indian Railways locomotive background with parallax scrolling
-- **Glassmorphism** — Multi-layered frosted glass panels with gradient borders and inner glow
-- **Dual Theme** — Fully theme-aware dark/light mode with CSS custom properties
-- **Premium Typography** — [Unbounded](https://fonts.google.com/specimen/Unbounded) for headings, [Sora](https://fonts.google.com/specimen/Sora) for UI text
-- **Mouse Spotlight** — Interactive radial gradient that follows the cursor on glass panels
-
-### ⚡ Interactions & Animations
-- **Cinematic Expand & Shine** — Heading letter-spacing expands on hover with an animated gradient light sweep (sheen) across the text
-- **Parallax Text Shadow** — Text-shadow angle shifts dynamically based on cursor position
-- **Ambient Glow Buttons** — LED-style ambient light that intensifies dramatically on hover
-- **3D Tilt Cards** — Service cards respond to mouse movement with perspective transforms
-- **Spring Physics** — All animations use `framer-motion` spring-based physics for natural feel
-- **Splash Screen** — Cinematic branded loading sequence with staggered entrance
-
-### 🔐 Authentication Modal
-- **3-State Machine** — Fluid transitions between Login → Agent Confirmation → Agent OTP
-- **Framer Motion `layout`** — Modal container smoothly animates its height between states
-- **Floating Labels** — Input labels animate from placeholder to floating position on focus
-- **6-Digit OTP Input** — Split input with auto-focus, paste support, and backspace navigation
-- **Glassmorphic Tooltips** — Hover popups with backdrop blur and subtle arrow indicators
-
-### 🧩 Functional Features
-- **Booking Engine** — Station autocomplete, date picker, class/quota selectors, route chips
-- **Live Clock** — Real-time formatted clock in the navbar (e.g., `Sat, 25 Apr | 10:45:30 AM`)
-- **EN/HI Language Toggle** — Full internationalization with 60+ translated UI strings
-- **Search Results** — Mock train results with availability badges, pricing, and class comparison
-- **PNR Status** — 10-digit input with progress indicator
-- **Charts & Vacancy** — Train number lookup with date selector
-- **Live Alerts Marquee** — Scrolling banner with categorized railway announcements
-- **Stat Counters** — Animated number counters that trigger on scroll into viewport
+**UI and Experience**
+- Dark and light mode with the preference saved to localStorage
+- English and Hindi language toggle — all UI strings switch instantly without a page reload
+- Live clock in the navbar showing the current time updated every second
+- Scrolling announcements banner with categorised railway alerts
+- Animated stat counters (daily trains, passengers, stations) that trigger when they scroll into view
+- Toast notifications for every user action — searching, swapping stations, loading routes, etc.
+- Cinematic splash screen on first load with a progress bar
 
 ---
 
-## 🏗️ Tech Stack
+## Tech stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Framework** | React 19 + TypeScript 6 |
-| **Build Tool** | Vite 8 |
-| **Styling** | Tailwind CSS v4 + Vanilla CSS custom properties |
-| **Animations** | Framer Motion 12 |
-| **Icons** | Lucide React |
-| **Fonts** | Google Fonts (Unbounded, Sora) |
+**Frontend**
+
+| What | Technology |
+|---|---|
+| Framework | React 19 |
+| Language | TypeScript 6 |
+| Build tool | Vite 8 |
+| Styling | Tailwind CSS v4 |
+| Animations | Framer Motion 12 |
+| Icons | Lucide React |
+| Fonts | Outfit, Plus Jakarta Sans, JetBrains Mono (Google Fonts) |
+
+**Backend**
+
+| What | Technology |
+|---|---|
+| Framework | Django 5 |
+| API | Django REST Framework |
+| Auth | djangorestframework-simplejwt |
+| CORS | django-cors-headers |
+| Database | SQLite |
 
 ---
 
-## 📂 Project Structure
+## Folder structure
 
 ```
 irctc-neo/
+│
 ├── public/
-│   ├── irctc-logo.png          # Official IRCTC logo
-│   └── indian-train-bg.png     # Cinematic hero background
-├── screenshots/                # README screenshots
+│   ├── irctc-logo.png              # Logo used in the navbar, splash, and hero
+│   └── indian-train-bg.png         # Hero background image
+│
+├── backend/                        # Django backend
+│   ├── core/
+│   │   ├── serializers.py          # Handles registration validation
+│   │   ├── views.py                # /me/ and /register/ views
+│   │   └── urls.py
+│   ├── settings.py                 # JWT config, CORS, database
+│   ├── urls.py                     # Root URL configuration
+│   ├── requirements.txt
+│   └── manage.py
+│
 ├── src/
 │   ├── components/
-│   │   ├── AmbientButton.tsx       # LED-glow button with glassmorphic tooltip
-│   │   ├── AncillaryServices.tsx   # Services section with 3D tilt cards
-│   │   ├── BookingEngine.tsx       # Main booking form (3 tabs, autocomplete)
-│   │   ├── Footer.tsx              # Site footer with link columns
-│   │   ├── InteractiveHeading.tsx  # Cinematic Expand & Shine heading
-│   │   ├── LiveAlerts.tsx          # Scrolling announcement marquee
-│   │   ├── LiveClock.tsx           # Real-time clock component
-│   │   ├── LoginModal.tsx          # Multi-step auth modal (3 states)
-│   │   ├── Navbar.tsx              # Navigation with clock, lang toggle, theme
-│   │   ├── SearchResults.tsx       # Train search results display
-│   │   ├── SplashScreen.tsx        # Branded loading animation
-│   │   └── ThemeProvider.tsx       # Dark/Light theme context
+│   │   ├── AmbientButton.tsx       # The glowing CTA button with tooltip
+│   │   ├── AncillaryServices.tsx   # The services section with 3D tilt cards
+│   │   ├── BookingEngine.tsx       # Main booking form with all three tabs
+│   │   ├── Footer.tsx              # Site footer
+│   │   ├── InteractiveHeading.tsx  # Hero heading with the light sweep effect
+│   │   ├── LiveAlerts.tsx          # Scrolling alerts banner
+│   │   ├── LiveClock.tsx           # Real-time clock in the navbar
+│   │   ├── LoginModal.tsx          # Multi-step auth modal
+│   │   ├── Navbar.tsx              # Top navigation bar
+│   │   ├── SearchResultsModal.tsx  # Train search results
+│   │   ├── SplashScreen.tsx        # Loading screen on first visit
+│   │   └── ThemeProvider.tsx       # Dark/light mode context
+│   │
 │   ├── data/
-│   │   └── mockData.ts            # Stations, trains, classes, quotas
+│   │   └── mockData.ts             # All mock stations, trains, alerts, classes
+│   │
 │   ├── i18n/
-│   │   ├── translations.ts        # EN/HI translation dictionary
-│   │   └── LanguageProvider.tsx    # React context for i18n
+│   │   ├── translations.ts         # English and Hindi strings
+│   │   └── LanguageProvider.tsx    # Language context and toggle
+│   │
 │   ├── lib/
-│   │   └── utils.ts               # cn() classname utility
-│   ├── App.tsx                     # Root layout + hero section
-│   ├── index.css                   # Complete design system (1400+ lines)
+│   │   └── utils.ts                # Small helper functions
+│   │
+│   ├── App.tsx                     # Root component and hero layout
+│   ├── index.css                   # All global styles and CSS design tokens
 │   └── main.tsx                    # Entry point
+│
 ├── index.html
-├── package.json
-├── tsconfig.json
-└── vite.config.ts
+├── vite.config.ts
+├── tsconfig.app.json
+└── package.json
 ```
 
 ---
 
-## 🚀 Getting Started
+## Running the frontend
 
-### Prerequisites
-- [Node.js](https://nodejs.org/) ≥ 18
-- npm ≥ 9 (or yarn/pnpm)
-
-### Installation
+You need Node.js 20 or higher installed on your machine.
 
 ```bash
-# Clone the repository
 git clone https://github.com/adityasharmass12/IRCTC-Neo.git
-cd IRCTC-Neo/irctc-neo
-
-# Install dependencies
+cd IRCTC-Neo
 npm install
-
-# Start the development server
 npm run dev
 ```
 
-The app will be running at **http://localhost:5173**
+That's it. Open http://localhost:5173 and the app will be running. Everything — the booking form, search results, PNR checker, dark mode, language toggle — works without the backend. The only thing that won't work without the backend is actually logging in or registering an account.
 
-### Build for Production
+To build for production:
 
 ```bash
 npm run build
@@ -177,61 +149,103 @@ npm run preview
 
 ---
 
-## 🎬 Design Highlights
+## Running the backend
 
-### Glassmorphism System
-The project uses a comprehensive token-based glassmorphism system with CSS custom properties that adapt to both light and dark themes:
+The backend is a standard Django project. No virtual environment is set up — just install the dependencies directly and run it.
 
-```css
---glass-bg: rgba(255,255,255,0.04);
---glass-border-from: rgba(255,255,255,0.18);
---glass-border-to: rgba(255,255,255,0.04);
---glass-glow: rgba(74,130,184,0.12);
---glass-inner: rgba(255,255,255,0.06);
+You need Python 3.10 or higher.
+
+```bash
+cd backend
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
 ```
 
-### Animation Philosophy
-Every animation uses **spring physics** via Framer Motion — no linear easing. This creates a natural, premium feel:
+The API will be running at http://localhost:8000.
 
-```tsx
-transition={{ type: "spring", stiffness: 400, damping: 25 }}
+If you want access to the Django admin panel, create a superuser first:
+
+```bash
+python manage.py createsuperuser
 ```
 
-### Color Palette
-| Token | Light | Dark | Purpose |
-|-------|-------|------|---------|
-| `--clr-primary` | `#1a3a5c` | `#4A82B8` | Trust Blue — primary actions |
-| `--clr-accent` | `#E87733` | `#F09040` | Saffron — CTAs, highlights |
-| `--clr-success` | `#138808` | `#22C55E` | India Green — confirmations |
+Then visit http://localhost:8000/admin and log in with those credentials.
 
 ---
 
-## 🌐 Internationalization
+## API reference
 
-The app supports real-time language switching between **English** and **Hindi** with 60+ translated UI strings covering:
+| Method | Endpoint | Needs auth | What it does |
+|---|---|---|---|
+| POST | `/api/token/` | No | Login — returns an access token and a refresh token |
+| POST | `/api/token/refresh/` | No | Exchange a refresh token for a new access token |
+| POST | `/api/register/` | No | Create a new user account |
+| GET | `/api/me/` | Yes | Returns the logged-in user's id, username, and email |
 
-- Navigation labels
-- Hero section text
-- Booking engine (labels, placeholders, buttons)
-- Services section
-- Footer content
-- Stats labels
+Authentication uses Bearer tokens. After login, the access token is stored in `localStorage` and sent with requests as `Authorization: Bearer <token>`.
 
----
-
-## 📄 License
-
-This project is for **educational and portfolio purposes only**.
-
-- The IRCTC name, logo, and branding are trademarks of [Indian Railway Catering and Tourism Corporation Ltd](https://www.irctc.co.in/).
-- This project does not process any real transactions or personal data.
+The access token expires after 60 minutes. The refresh token lasts 1 day.
 
 ---
 
-<div align="center">
+## Backend environment variables
 
-**Built with ❤️ for Indian Railways**
+The backend works out of the box for local development without any configuration. For production, you should set these:
 
-*A conceptual redesign demonstrating modern web technologies and premium UI/UX design*
+```
+DJANGO_SECRET_KEY=replace-this-with-a-long-random-string
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=yourdomain.com
+```
 
-</div>
+---
+
+## How the design system works
+
+All colors, spacing, and visual tokens are defined as CSS custom properties in `src/index.css`. This is what makes the dark/light mode switch instant — there is no JavaScript involved in changing colors, just a `data-theme` attribute swap on the `<html>` element.
+
+The main color tokens:
+
+| Token | Light | Dark | Used for |
+|---|---|---|---|
+| `--clr-primary` | `#1a3a5c` | `#4A82B8` | Buttons, links, borders |
+| `--clr-accent` | `#E87733` | `#F09040` | CTAs, highlighted text |
+| `--clr-success` | `#138808` | `#22C55E` | Confirmations |
+| `--clr-danger` | `#C0392B` | `#EF4444` | Errors and alerts |
+| `--clr-bg` | `#F0F2F5` | `#0D1520` | Page background |
+| `--clr-surface` | `#FFFFFF` | `#141E2E` | Cards and panels |
+
+Fonts used:
+- **Outfit** — headings and large display text
+- **Plus Jakarta Sans** — all UI labels, body text, buttons
+- **JetBrains Mono** — PNR numbers, train codes, timestamps
+
+---
+
+## How translations work
+
+All UI text lives in `src/i18n/translations.ts` as two plain objects — one for English, one for Hindi. The `LanguageProvider` wraps the app and exposes a `t` object via React context. Any component that needs translated text just does:
+
+```ts
+const { t } = useLang()
+// then use t.bookTicket, t.searchTrains, etc.
+```
+
+To add a new string, add the key to the `TranslationStrings` interface, then add the value in both the `en` and `hi` objects. That's the whole system.
+
+---
+
+## How the login modal works
+
+The modal has four possible states managed as a simple string variable: `login`, `register`, `agent-confirm`, and `agent-otp`. Each state renders a different form inside the same modal container. Framer Motion's `layout` prop handles the height change automatically so the modal grows and shrinks smoothly as you move between states.
+
+The `AnimatePresence` component handles the slide-in and slide-out transitions between states — each new state slides in from the right and the old one slides out to the left (or vice versa when going back).
+
+On successful login, the JWT tokens are saved to localStorage and the navbar updates to show the account menu.
+
+---
+
+## Disclaimer
+
+The IRCTC name, logo, and branding are property of Indian Railway Catering and Tourism Corporation Ltd. Indian Railways branding belongs to the Ministry of Railways, Government of India. This project has no affiliation with either of them. It was built for learning and portfolio purposes only.

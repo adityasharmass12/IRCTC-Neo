@@ -8,6 +8,7 @@ import {
 import { stations, trainClasses, quotas, recentSearches, trainResults, type Station, type TrainResult } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 import SearchResultsModal from "./SearchResultsModal";
+import BookingCheckoutModal, { type SelectedClass } from "./BookingCheckoutModal";
 import { useLang } from "@/i18n/LanguageProvider";
 import AmbientButton from "./AmbientButton";
 const tabIds = ["book", "pnr", "charts"] as const;
@@ -282,6 +283,8 @@ export default function BookingEngine() {
   const [trainNumber, setTrainNumber]   = useState("");
   const [isSearching, setIsSearching]   = useState(false);
   const [showResults, setShowResults]   = useState(false);
+  const [bookingTrain, setBookingTrain] = useState<TrainResult | null>(null);
+  const [bookingClass, setBookingClass] = useState<SelectedClass | null>(null);
   const [swapRotated, setSwapRotated]  = useState(false);
   const [dateFocused, setDateFocused] = useState(false);
   const { toasts, show: showToast, remove: removeToast } = useToasts();
@@ -316,10 +319,16 @@ export default function BookingEngine() {
   };
   const handleBook = (train: TrainResult, classCode: string) => {
     const cls = train.classes.find((c) => c.code === classCode);
-    showToast(
-      `Booking: ${train.trainName} (${classCode}) — ₹${cls?.price.toLocaleString("en-IN")}`,
-      "success"
-    );
+    if (!cls) return;
+    setBookingTrain(train);
+    setBookingClass({
+      code: cls.code,
+      name: cls.name,
+      price: cls.price,
+      available: cls.available,
+      seats: cls.seats,
+    });
+    setShowResults(false);
   };
   const handlePnr = () => {
     if (pnrNumber.length !== 10) { showToast("Please enter a valid 10-digit PNR number.", "error"); return; }
@@ -763,6 +772,16 @@ export default function BookingEngine() {
           onBook={handleBook}
           routeText={from && to ? `${from.split(' (')[0]} → ${to.split(' (')[0]}` : "Search Results"}
           dateText={date}
+        />
+        <BookingCheckoutModal
+          isOpen={!!bookingTrain}
+          onClose={() => { setBookingTrain(null); setBookingClass(null); setShowResults(false); }}
+          train={bookingTrain}
+          selectedClass={bookingClass}
+          routeText={from && to ? `${from.split(' (')[0]} → ${to.split(' (')[0]}` : ""}
+          dateText={date}
+          setBookingTrain={setBookingTrain}
+          setBookingClass={setBookingClass}
         />
       </section>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
