@@ -51,11 +51,19 @@ The project is split into two parts — a React frontend that handles everything
 
 | What | Technology |
 |---|---|
+<<<<<<< HEAD
 | Framework | React 19 |
 | Language | TypeScript 6 |
 | Build tool | Vite 8 |
 | Styling | Tailwind CSS v4 |
 | Animations | Framer Motion 12 |
+=======
+| Framework | React |
+| Language | TypeScript |
+| Build tool | Vite |
+| Styling | Tailwind CSS |
+| Animations | Framer Motion |
+>>>>>>> 8f72c0ca7124ad665873dcc5f951fe537bc9bd5e
 | Icons | Lucide React |
 | Fonts | Outfit, Plus Jakarta Sans, JetBrains Mono (Google Fonts) |
 
@@ -248,4 +256,8 @@ On successful login, the JWT tokens are saved to localStorage and the navbar upd
 
 ## Disclaimer
 
+<<<<<<< HEAD
 The IRCTC name, logo, and branding are property of Indian Railway Catering and Tourism Corporation Ltd. Indian Railways branding belongs to the Ministry of Railways, Government of India. This project has no affiliation with either of them. It was built for learning and portfolio purposes only.
+=======
+The IRCTC name, logo, and branding are property of Indian Railway Catering and Tourism Corporation Ltd. Indian Railways branding belongs to the Ministry of Railways, Government of India. This project has no affiliation with either of them. It was built for learning and portfolio purposes only.
+>>>>>>> 8f72c0ca7124ad665873dcc5f951fe537bc9bd5e
