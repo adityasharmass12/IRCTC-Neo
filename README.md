@@ -1,4 +1,4 @@
-    # IRCTC Neo
+# IRCTC Neo
 
 A redesign concept for the IRCTC railway booking platform. The goal was to take one of the most used but visually outdated websites in India and rebuild it with a modern interface, smooth interactions, and a proper full-stack setup — while keeping all the core functionality intact.
 
