@@ -1,8 +1,5 @@
-// ── IRCTC Neo — EN/HI Translation Dictionary ──────────────
 export type Language = "en" | "hi";
-
 export interface TranslationStrings {
-  // Navbar
   bookTicket: string;
   pnrStatus: string;
   trainSchedule: string;
@@ -12,14 +9,10 @@ export interface TranslationStrings {
   login: string;
   loginRegister: string;
   indianRailways: string;
-
-  // Hero
   badgeText: string;
   heroLine1: string;
   heroLine2: string;
   heroSub: string;
-
-  // Booking Engine
   from: string;
   to: string;
   date: string;
@@ -45,20 +38,14 @@ export interface TranslationStrings {
   divyaangConcession: string;
   railwayPass: string;
   flexibleDate: string;
-
-  // Services Section
   additionalServices: string;
   servicesBeyond: string;
   servicesDesc: string;
   learnMore: string;
-
-  // Stats
   dailyTrains: string;
   passengersDay: string;
   stations: string;
   exploreServices: string;
-
-  // Footer
   footerDesc: string;
   quickLinks: string;
   services: string;
@@ -67,9 +54,7 @@ export interface TranslationStrings {
   govtEnterprise: string;
   ministryRailways: string;
 }
-
 const en: TranslationStrings = {
-  // Navbar
   bookTicket: "Book Ticket",
   pnrStatus: "PNR Status",
   trainSchedule: "Train Schedule",
@@ -79,14 +64,10 @@ const en: TranslationStrings = {
   login: "Login",
   loginRegister: "Login / Register",
   indianRailways: "Indian Railways",
-
-  // Hero
   badgeText: "Official IRCTC Partner Portal",
   heroLine1: "Your Train Journey,",
   heroLine2: "Effortlessly Booked",
   heroSub: "Search schedules, check seat availability, book tickets, and track PNR — all from one place. Powered by Indian Railways.",
-
-  // Booking Engine
   from: "From",
   to: "To",
   date: "Date",
@@ -112,20 +93,14 @@ const en: TranslationStrings = {
   divyaangConcession: "Divyaang Concession",
   railwayPass: "Railway Pass",
   flexibleDate: "Flexible with Date",
-
-  // Services Section
   additionalServices: "Additional Services",
   servicesBeyond: "Services Beyond the Journey",
   servicesDesc: "IRCTC offers a range of travel and lifestyle services designed to make every journey more comfortable and convenient.",
   learnMore: "Learn more",
-
-  // Stats
   dailyTrains: "Daily Trains",
   passengersDay: "Passengers/Day",
   stations: "Stations",
   exploreServices: "Explore Services",
-
-  // Footer
   footerDesc: "Official IRCTC partner portal for train ticket booking, PNR tracking, tourism packages, and rail services across India.",
   quickLinks: "Quick Links",
   services: "Services",
@@ -134,9 +109,7 @@ const en: TranslationStrings = {
   govtEnterprise: "A Government of India Enterprise",
   ministryRailways: "Ministry of Railways",
 };
-
 const hi: TranslationStrings = {
-  // Navbar
   bookTicket: "टिकट बुक करें",
   pnrStatus: "PNR स्थिति",
   trainSchedule: "ट्रेन समय सारणी",
@@ -146,14 +119,10 @@ const hi: TranslationStrings = {
   login: "लॉगिन",
   loginRegister: "लॉगिन / रजिस्टर",
   indianRailways: "भारतीय रेलवे",
-
-  // Hero
   badgeText: "आधिकारिक IRCTC पार्टनर पोर्टल",
   heroLine1: "आपकी ट्रेन यात्रा,",
   heroLine2: "आसानी से बुक करें",
   heroSub: "समय सारणी खोजें, सीट उपलब्धता जांचें, टिकट बुक करें, और PNR ट्रैक करें — सब एक जगह। भारतीय रेलवे द्वारा संचालित।",
-
-  // Booking Engine
   from: "से",
   to: "तक",
   date: "तारीख",
@@ -179,20 +148,14 @@ const hi: TranslationStrings = {
   divyaangConcession: "दिव्यांग रियायत",
   railwayPass: "रेलवे पास",
   flexibleDate: "तारीख में लचीलापन",
-
-  // Services Section
   additionalServices: "अतिरिक्त सेवाएं",
   servicesBeyond: "यात्रा से परे सेवाएं",
   servicesDesc: "IRCTC हर यात्रा को और अधिक आरामदायक बनाने के लिए यात्रा और जीवनशैली सेवाओं की एक श्रृंखला प्रदान करता है।",
   learnMore: "और जानें",
-
-  // Stats
   dailyTrains: "दैनिक ट्रेनें",
   passengersDay: "यात्री/दिन",
   stations: "स्टेशन",
   exploreServices: "सेवाएं देखें",
-
-  // Footer
   footerDesc: "भारत भर में ट्रेन टिकट बुकिंग, PNR ट्रैकिंग, पर्यटन पैकेज और रेल सेवाओं के लिए आधिकारिक IRCTC पार्टनर पोर्टल।",
   quickLinks: "त्वरित लिंक",
   services: "सेवाएं",
@@ -201,5 +164,4 @@ const hi: TranslationStrings = {
   govtEnterprise: "भारत सरकार का उद्यम",
   ministryRailways: "रेल मंत्रालय",
 };
-
 export const translations: Record<Language, TranslationStrings> = { en, hi };

@@ -1,10 +1,5 @@
 import { useState, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-/**
- * AmbientButton — A button with an LED-like ambient glow that expands on hover,
- * plus a glassmorphic tooltip that scales up above the button.
- */
 export default function AmbientButton({
   children,
   tooltipText,
@@ -22,10 +17,9 @@ export default function AmbientButton({
 }) {
   const [hovered, setHovered] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
-
   return (
     <div className="relative" style={{ display: "inline-block", width: "100%" }}>
-      {/* Tooltip */}
+      {}
       <AnimatePresence>
         {hovered && tooltipText && (
           <motion.div
@@ -53,7 +47,7 @@ export default function AmbientButton({
               }}
             >
               {tooltipText}
-              {/* Arrow */}
+              {}
               <div
                 className="absolute left-1/2 -translate-x-1/2"
                 style={{
@@ -71,8 +65,7 @@ export default function AmbientButton({
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Button with ambient glow */}
+      {}
       <motion.button
         ref={btnRef}
         onClick={onClick}

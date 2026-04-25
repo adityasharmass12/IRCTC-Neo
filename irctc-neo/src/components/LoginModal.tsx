@@ -2,13 +2,11 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, Eye, EyeOff, ArrowLeft, CheckCircle2,
-  User, Lock, Shield, KeyRound
+  User, Lock, Shield, KeyRound, Loader2, AlertCircle, Mail
 } from "lucide-react";
-
-// ── Types ──────────────────────────────────────────────
-type ModalState = "login" | "agent-confirm" | "agent-otp";
-
-// ── Slide animation variants ───────────────────────────
+import { storeTokens } from "./Navbar";
+type ModalState = "login" | "agent-confirm" | "agent-otp" | "register";
+const API_BASE = "http://localhost:8000";
 const slideVariants = {
   enter: (dir: number) => ({
     x: dir > 0 ? 60 : -60,
@@ -26,11 +24,8 @@ const slideVariants = {
     scale: 0.97,
   }),
 };
-
-// ── Cinematic Heading with Sheen ───────────────────────
 function ModalHeading({ text }: { text: string }) {
   const [hovered, setHovered] = useState(false);
-
   return (
     <motion.h2
       className="text-xl sm:text-2xl font-bold tracking-tight text-center"
@@ -49,8 +44,6 @@ function ModalHeading({ text }: { text: string }) {
     </motion.h2>
   );
 }
-
-// ── Floating Label Input ───────────────────────────────
 function FloatingInput({
   id, label, type = "text", value, onChange, icon: Icon, rightAction,
 }: {
@@ -65,18 +58,16 @@ function FloatingInput({
   const [focused, setFocused] = useState(false);
   const hasValue = value.length > 0;
   const isFloating = focused || hasValue;
-
   return (
     <div className="relative group">
-      {/* Icon */}
+      {}
       <div
         className="absolute left-3.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none transition-colors duration-200"
         style={{ color: focused ? "var(--clr-primary)" : "var(--clr-muted)" }}
       >
         <Icon className="w-4 h-4" />
       </div>
-
-      {/* Floating label */}
+      {}
       <motion.label
         htmlFor={id}
         className="absolute pointer-events-none z-10 font-medium"
@@ -95,8 +86,7 @@ function FloatingInput({
       >
         {label}
       </motion.label>
-
-      {/* Input */}
+      {}
       <input
         id={id}
         type={type}
@@ -117,8 +107,7 @@ function FloatingInput({
             : "0 1px 4px var(--clr-shadow-sm)",
         }}
       />
-
-      {/* Right action (e.g. eye icon) */}
+      {}
       {rightAction && (
         <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10">
           {rightAction}
@@ -127,15 +116,12 @@ function FloatingInput({
     </div>
   );
 }
-
-// ── OTP Split Input ────────────────────────────────────
 function OtpInput({ value, onChange, length = 6 }: {
   value: string;
   onChange: (v: string) => void;
   length?: number;
 }) {
   const refs = useRef<(HTMLInputElement | null)[]>([]);
-
   const handleChange = (i: number, char: string) => {
     if (char && !/^\d$/.test(char)) return;
     const arr = value.padEnd(length, " ").split("");
@@ -144,20 +130,17 @@ function OtpInput({ value, onChange, length = 6 }: {
     onChange(next);
     if (char && i < length - 1) refs.current[i + 1]?.focus();
   };
-
   const handleKeyDown = (i: number, e: React.KeyboardEvent) => {
     if (e.key === "Backspace" && !value[i] && i > 0) {
       refs.current[i - 1]?.focus();
     }
   };
-
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
     const paste = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, length);
     onChange(paste);
     refs.current[Math.min(paste.length, length - 1)]?.focus();
   };
-
   return (
     <div className="flex justify-center gap-2.5 sm:gap-3">
       {Array.from({ length }).map((_, i) => (
@@ -180,25 +163,32 @@ function OtpInput({ value, onChange, length = 6 }: {
     </div>
   );
 }
-
-// ── LoginModal ─────────────────────────────────────────
 export default function LoginModal({
   isOpen,
   onClose,
+  onLoginSuccess,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  onLoginSuccess: () => void;
 }) {
   const [state, setState] = useState<ModalState>("login");
   const [direction, setDirection] = useState(0);
-
-  // Form fields
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [otpValue, setOtpValue] = useState("");
   const [visuallyImpaired, setVisuallyImpaired] = useState(false);
-
+  // Registration fields
+  const [regUsername, setRegUsername] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [regConfirm, setRegConfirm] = useState("");
+  const [showRegPassword, setShowRegPassword] = useState(false);
+  // JWT auth state
+  const [loading, setLoading] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   // Reset everything when modal closes
   useEffect(() => {
     if (!isOpen) {
@@ -210,16 +200,54 @@ export default function LoginModal({
         setShowPassword(false);
         setOtpValue("");
         setVisuallyImpaired(false);
+        setAuthError(null);
+        setSuccessMessage(null);
+        setLoading(false);
+        setRegUsername("");
+        setRegEmail("");
+        setRegPassword("");
+        setRegConfirm("");
+        setShowRegPassword(false);
       }, 300);
     }
   }, [isOpen]);
-
   const goTo = useCallback((next: ModalState, dir: number) => {
     setDirection(dir);
     setState(next);
+    setAuthError(null);
+    setSuccessMessage(null);
   }, []);
-
-  // Lock body scroll when modal is open
+  // ── JWT Sign-In ──────────────────────────────────────
+  const handleSignIn = useCallback(async () => {
+    if (!username.trim() || !password.trim()) {
+      setAuthError("Please enter both username and password.");
+      return;
+    }
+    setLoading(true);
+    setAuthError(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/token/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: username.trim(), password }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        storeTokens(data.access, data.refresh);
+        onLoginSuccess();
+      } else if (res.status === 401 || res.status === 400) {
+        const data = await res.json().catch(() => ({}));
+        const msg = data?.detail || data?.non_field_errors?.[0] || "Invalid username or password.";
+        setAuthError(msg);
+      } else {
+        setAuthError("Something went wrong. Please try again later.");
+      }
+    } catch {
+      setAuthError("Cannot connect to server. Ensure the backend is running on port 8000.");
+    } finally {
+      setLoading(false);
+    }
+  }, [username, password, onLoginSuccess]);
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -228,7 +256,6 @@ export default function LoginModal({
     }
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -239,7 +266,7 @@ export default function LoginModal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
         >
-          {/* Backdrop — blurred dark overlay */}
+          {}
           <motion.div
             className="absolute inset-0"
             style={{
@@ -252,8 +279,7 @@ export default function LoginModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           />
-
-          {/* Modal — glassmorphic container with layout animation */}
+          {}
           <motion.div
             className="login-modal-glass relative z-10 w-full overflow-hidden"
             style={{ maxWidth: "440px" }}
@@ -268,7 +294,7 @@ export default function LoginModal({
               layout: { type: "spring", stiffness: 350, damping: 30 },
             }}
           >
-            {/* Close button */}
+            {}
             <motion.button
               onClick={onClose}
               className="absolute top-4 right-4 z-50 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none"
@@ -289,12 +315,10 @@ export default function LoginModal({
             >
               <X className="w-4 h-4" />
             </motion.button>
-
-            {/* Content — AnimatePresence for smooth state transitions */}
+            {}
             <div className="p-6 sm:p-8">
               <AnimatePresence mode="wait" custom={direction}>
-
-                {/* ═══════════ STATE 1: Standard Login ═══════════ */}
+                {}
                 {state === "login" && (
                   <motion.div
                     key="login"
@@ -305,7 +329,7 @@ export default function LoginModal({
                     exit="exit"
                     transition={{ type: "spring", stiffness: 400, damping: 35 }}
                   >
-                    {/* IRCTC Logo + Heading */}
+                    {}
                     <div className="text-center mb-6">
                       <div className="flex justify-center mb-3">
                         <div
@@ -326,8 +350,7 @@ export default function LoginModal({
                         Sign in to your IRCTC account
                       </p>
                     </div>
-
-                    {/* Input Fields */}
+                    {}
                     <div className="space-y-4">
                       <FloatingInput
                         id="login-username"
@@ -336,7 +359,6 @@ export default function LoginModal({
                         onChange={setUsername}
                         icon={User}
                       />
-
                       <FloatingInput
                         id="login-password"
                         label="Password"
@@ -359,8 +381,7 @@ export default function LoginModal({
                         }
                       />
                     </div>
-
-                    {/* Forgot link */}
+                    {}
                     <div className="mt-3 text-right">
                       <button
                         className="text-xs font-medium transition-colors cursor-pointer bg-transparent border-none"
@@ -371,8 +392,7 @@ export default function LoginModal({
                         Forgot Account Details?
                       </button>
                     </div>
-
-                    {/* Visually Impaired Checkbox */}
+                    {}
                     <label
                       className="flex items-start gap-2.5 mt-4 cursor-pointer select-none"
                       style={{ fontFamily: "var(--font-ui)" }}
@@ -391,18 +411,65 @@ export default function LoginModal({
                         Visually impaired users may select this option to receive OTP instead of CAPTCHA
                       </span>
                     </label>
-
-                    {/* SIGN IN — Ambient glow primary CTA */}
+                    {}
+                    <AnimatePresence>
+                      {successMessage && (
+                        <motion.div
+                          className="mt-4 flex items-center gap-2 px-4 py-3 rounded-lg text-sm"
+                          style={{
+                            background: "rgba(19,136,8,0.08)",
+                            border: "1px solid rgba(19,136,8,0.25)",
+                            color: "var(--clr-success)",
+                            fontFamily: "var(--font-ui)",
+                          }}
+                          initial={{ opacity: 0, y: -6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -6 }}
+                        >
+                          <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                          {successMessage}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    {}
+                    <AnimatePresence>
+                      {authError && (
+                        <motion.div
+                          className="mt-4 flex items-center gap-2 px-4 py-3 rounded-lg text-sm"
+                          style={{
+                            background: "rgba(192,57,43,0.08)",
+                            border: "1px solid rgba(192,57,43,0.25)",
+                            color: "var(--clr-danger)",
+                            fontFamily: "var(--font-ui)",
+                          }}
+                          initial={{ opacity: 0, y: -6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -6 }}
+                        >
+                          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                          {authError}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    {}
                     <motion.button
-                      className="login-modal-cta mt-6"
-                      whileHover={{ scale: 1.015, y: -1 }}
-                      whileTap={{ scale: 0.98 }}
+                      className="login-modal-cta mt-5"
+                      whileHover={!loading ? { scale: 1.015, y: -1 } : {}}
+                      whileTap={!loading ? { scale: 0.98 } : {}}
                       transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                      onClick={handleSignIn}
+                      disabled={loading}
                     >
-                      SIGN IN
+                      {loading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Verifying...
+                        </>
+                      ) : (
+                        "SIGN IN"
+                      )}
                     </motion.button>
-
-                    {/* Divider */}
+                    {}
                     <div className="flex items-center gap-3 my-5">
                       <div className="flex-1 h-px" style={{ background: "var(--clr-border)" }} />
                       <span
@@ -413,13 +480,13 @@ export default function LoginModal({
                       </span>
                       <div className="flex-1 h-px" style={{ background: "var(--clr-border)" }} />
                     </div>
-
-                    {/* Bottom Action Bar — REGISTER + AGENT LOGIN */}
+                    {}
                     <div className="grid grid-cols-2 gap-3">
                       <motion.button
                         className="login-modal-secondary"
                         whileHover={{ scale: 1.03, y: -1 }}
                         whileTap={{ scale: 0.97 }}
+                        onClick={() => goTo("register", 1)}
                       >
                         REGISTER
                       </motion.button>
@@ -434,8 +501,184 @@ export default function LoginModal({
                     </div>
                   </motion.div>
                 )}
-
-                {/* ═══════════ STATE 2: Agent Confirmation ═══════════ */}
+                {}
+                {state === "register" && (
+                  <motion.div
+                    key="register"
+                    custom={direction}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                  >
+                    {}
+                    <motion.button
+                      onClick={() => { goTo("login", -1); }}
+                      className="flex items-center gap-1.5 text-xs font-medium mb-5 cursor-pointer bg-transparent border-none transition-colors"
+                      style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = "var(--clr-primary)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = "var(--clr-muted)")}
+                      whileHover={{ x: -3 }}
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      Back to Login
+                    </motion.button>
+                    {}
+                    <div className="text-center mb-6">
+                      <div className="flex justify-center mb-3">
+                        <div
+                          className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                          style={{
+                            background: "linear-gradient(135deg, var(--clr-primary), #0EA5E9)",
+                            boxShadow: "0 4px 20px var(--clr-primary-glow)",
+                          }}
+                        >
+                          <User className="w-7 h-7 text-white" />
+                        </div>
+                      </div>
+                      <ModalHeading text="CREATE ACCOUNT" />
+                      <p
+                        className="text-xs mt-1.5"
+                        style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
+                      >
+                        Register for a new IRCTC account
+                      </p>
+                    </div>
+                    {}
+                    <div className="space-y-4">
+                      <FloatingInput
+                        id="reg-username"
+                        label="Username"
+                        value={regUsername}
+                        onChange={setRegUsername}
+                        icon={User}
+                      />
+                      <FloatingInput
+                        id="reg-email"
+                        label="Email Address"
+                        type="email"
+                        value={regEmail}
+                        onChange={setRegEmail}
+                        icon={Mail}
+                      />
+                      <FloatingInput
+                        id="reg-password"
+                        label="Password"
+                        type={showRegPassword ? "text" : "password"}
+                        value={regPassword}
+                        onChange={setRegPassword}
+                        icon={Lock}
+                        rightAction={
+                          <button
+                            type="button"
+                            onClick={() => setShowRegPassword(!showRegPassword)}
+                            className="p-1 rounded-md transition-colors cursor-pointer border-none bg-transparent"
+                            style={{ color: "var(--clr-muted)" }}
+                            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--clr-primary)")}
+                            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--clr-muted)")}
+                            aria-label={showRegPassword ? "Hide password" : "Show password"}
+                          >
+                            {showRegPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        }
+                      />
+                      <FloatingInput
+                        id="reg-confirm"
+                        label="Confirm Password"
+                        type={showRegPassword ? "text" : "password"}
+                        value={regConfirm}
+                        onChange={setRegConfirm}
+                        icon={Lock}
+                      />
+                    </div>
+                    {}
+                    <AnimatePresence>
+                      {authError && (
+                        <motion.div
+                          className="mt-4 flex items-center gap-2 px-4 py-3 rounded-lg text-sm"
+                          style={{
+                            background: "rgba(192,57,43,0.08)",
+                            border: "1px solid rgba(192,57,43,0.25)",
+                            color: "var(--clr-danger)",
+                            fontFamily: "var(--font-ui)",
+                          }}
+                          initial={{ opacity: 0, y: -6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -6 }}
+                        >
+                          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                          {authError}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    {}
+                    <motion.button
+                      className="login-modal-cta mt-5"
+                      whileHover={!loading ? { scale: 1.015, y: -1 } : {}}
+                      whileTap={!loading ? { scale: 0.98 } : {}}
+                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                      disabled={loading}
+                      onClick={async () => {
+                        if (regPassword !== regConfirm) {
+                          setAuthError("Passwords do not match.");
+                          return;
+                        }
+                        if (!regUsername.trim() || !regEmail.trim() || !regPassword.trim()) {
+                          setAuthError("Please fill in all fields.");
+                          return;
+                        }
+                        setLoading(true);
+                        setAuthError(null);
+                        try {
+                          const res = await fetch(`${API_BASE}/api/register/`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              username: regUsername.trim(),
+                              email: regEmail.trim(),
+                              password: regPassword,
+                              password_confirm: regConfirm,
+                            }),
+                          });
+                          if (res.status === 201) {
+                            setUsername(regUsername.trim());
+                            setRegUsername("");
+                            setRegEmail("");
+                            setRegPassword("");
+                            setRegConfirm("");
+                            setSuccessMessage("Account created! Please log in.");
+                            goTo("login", -1);
+                          } else {
+                            const data = await res.json().catch(() => ({}));
+                            const msg =
+                              data?.username?.[0] ||
+                              data?.email?.[0] ||
+                              data?.password?.[0] ||
+                              data?.password_confirm?.[0] ||
+                              data?.detail ||
+                              "Registration failed. Please try again.";
+                            setAuthError(msg);
+                          }
+                        } catch {
+                          setAuthError("Cannot connect to server. Ensure the backend is running on port 8000.");
+                        } finally {
+                          setLoading(false);
+                        }
+                      }}
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Creating...
+                        </>
+                      ) : (
+                        "CREATE ACCOUNT"
+                      )}
+                    </motion.button>
+                  </motion.div>
+                )}
+                {}
                 {state === "agent-confirm" && (
                   <motion.div
                     key="agent-confirm"
@@ -446,7 +689,7 @@ export default function LoginModal({
                     exit="exit"
                     transition={{ type: "spring", stiffness: 400, damping: 35 }}
                   >
-                    {/* Back button */}
+                    {}
                     <motion.button
                       onClick={() => goTo("login", -1)}
                       className="flex items-center gap-1.5 text-xs font-medium mb-5 cursor-pointer bg-transparent border-none transition-colors"
@@ -458,8 +701,7 @@ export default function LoginModal({
                       <ArrowLeft className="w-3.5 h-3.5" />
                       Back
                     </motion.button>
-
-                    {/* Heading */}
+                    {}
                     <div className="text-center mb-5">
                       <div className="flex justify-center mb-3">
                         <div
@@ -474,8 +716,7 @@ export default function LoginModal({
                       </div>
                       <ModalHeading text="Agent Confirmation" />
                     </div>
-
-                    {/* Rules list */}
+                    {}
                     <div
                       className="rounded-xl p-4 sm:p-5 mb-5"
                       style={{
@@ -519,8 +760,7 @@ export default function LoginModal({
                         ))}
                       </ol>
                     </div>
-
-                    {/* I Agree — Amber ambient CTA */}
+                    {}
                     <motion.button
                       className="login-modal-cta"
                       onClick={() => goTo("agent-otp", 1)}
@@ -533,8 +773,7 @@ export default function LoginModal({
                     </motion.button>
                   </motion.div>
                 )}
-
-                {/* ═══════════ STATE 3: Agent OTP Login ═══════════ */}
+                {}
                 {state === "agent-otp" && (
                   <motion.div
                     key="agent-otp"
@@ -545,7 +784,7 @@ export default function LoginModal({
                     exit="exit"
                     transition={{ type: "spring", stiffness: 400, damping: 35 }}
                   >
-                    {/* Back button */}
+                    {}
                     <motion.button
                       onClick={() => goTo("login", -1)}
                       className="flex items-center gap-1.5 text-xs font-medium mb-5 cursor-pointer bg-transparent border-none transition-colors"
@@ -557,8 +796,7 @@ export default function LoginModal({
                       <ArrowLeft className="w-3.5 h-3.5" />
                       Back
                     </motion.button>
-
-                    {/* Heading */}
+                    {}
                     <div className="text-center mb-6">
                       <div className="flex justify-center mb-3">
                         <div
@@ -572,8 +810,7 @@ export default function LoginModal({
                         </div>
                       </div>
                       <ModalHeading text="Agent Login With OTP" />
-
-                      {/* DC LOGIN badge */}
+                      {}
                       <motion.div
                         className="inline-flex items-center gap-2 mt-3 px-4 py-1.5 rounded-full"
                         style={{
@@ -600,19 +837,16 @@ export default function LoginModal({
                         </span>
                       </motion.div>
                     </div>
-
-                    {/* OTP instruction */}
+                    {}
                     <p
                       className="text-center text-xs mb-5"
                       style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
                     >
                       Enter the 6-digit OTP sent to your registered mobile number
                     </p>
-
-                    {/* OTP Input */}
+                    {}
                     <OtpInput value={otpValue} onChange={setOtpValue} length={6} />
-
-                    {/* Resend OTP */}
+                    {}
                     <div className="mt-4 text-center">
                       <button
                         className="text-[11px] font-medium cursor-pointer bg-transparent border-none transition-colors"
@@ -624,8 +858,7 @@ export default function LoginModal({
                         <span style={{ color: "var(--clr-primary)", fontWeight: 600 }}>Resend</span>
                       </button>
                     </div>
-
-                    {/* VERIFY & LOGIN */}
+                    {}
                     <motion.button
                       className="login-modal-cta mt-6"
                       whileHover={{ scale: 1.015, y: -1 }}
@@ -637,7 +870,6 @@ export default function LoginModal({
                     </motion.button>
                   </motion.div>
                 )}
-
               </AnimatePresence>
             </div>
           </motion.div>

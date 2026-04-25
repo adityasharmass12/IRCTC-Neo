@@ -1,13 +1,11 @@
 import { motion } from "framer-motion";
 import { AlertTriangle, Info, Bell } from "lucide-react";
 import { liveAlerts, type LiveAlert } from "@/data/mockData";
-
 function getPriorityIcon(p: LiveAlert["priority"]) {
   if (p === "high")   return <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />;
   if (p === "medium") return <Bell className="w-3.5 h-3.5 flex-shrink-0" />;
   return <Info className="w-3.5 h-3.5 flex-shrink-0" />;
 }
-
 function getPriorityStyles(p: LiveAlert["priority"]) {
   if (p === "high") {
     return {
@@ -24,7 +22,6 @@ function getPriorityStyles(p: LiveAlert["priority"]) {
     iconColor: "var(--clr-primary)",
   };
 }
-
 export default function LiveAlerts() {
   const doubled = [...liveAlerts, ...liveAlerts];
   return (
@@ -35,7 +32,7 @@ export default function LiveAlerts() {
         viewport={{ once: true }}
         transition={{ duration: 0.4 }}
       >
-        {/* Header */}
+        {}
         <div className="flex items-center gap-2 mb-2 px-1">
           <span
             className="w-1.5 h-1.5 rounded-full animate-pulse"
@@ -48,8 +45,7 @@ export default function LiveAlerts() {
             Live Alerts & Announcements
           </span>
         </div>
-
-        {/* Scrolling ticker */}
+        {}
         <div
           className="rounded-lg overflow-hidden"
           style={{

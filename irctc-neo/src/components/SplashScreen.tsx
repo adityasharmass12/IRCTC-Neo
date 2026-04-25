@@ -1,15 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
 export default function SplashScreen({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0);
   const [exiting, setExiting] = useState(false);
-
   const handleComplete = useCallback(() => {
     setExiting(true);
     setTimeout(() => onComplete(), 500);
   }, [onComplete]);
-
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -23,7 +20,6 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
     }, 20);
     return () => clearInterval(interval);
   }, [handleComplete]);
-
   return (
     <AnimatePresence>
       {!exiting && (
@@ -34,7 +30,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {/* Logo mark */}
+          {}
           <motion.div
             className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 overflow-hidden"
             style={{ background: "transparent" }}
@@ -49,8 +45,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
               style={{ filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))" }}
             />
           </motion.div>
-
-          {/* Brand text */}
+          {}
           <motion.div
             className="text-center"
             initial={{ opacity: 0, y: 10 }}
@@ -70,8 +65,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
               Indian Railway Catering & Tourism Corporation
             </p>
           </motion.div>
-
-          {/* Progress bar */}
+          {}
           <motion.div
             className="mt-8 w-64"
             initial={{ opacity: 0, y: 8 }}
@@ -97,8 +91,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
               Loading services... {Math.round(progress)}%
             </p>
           </motion.div>
-
-          {/* Footer note */}
+          {}
           <motion.p
             className="absolute bottom-8 text-[10px] text-center tracking-wider"
             style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)", opacity: 0.6 }}

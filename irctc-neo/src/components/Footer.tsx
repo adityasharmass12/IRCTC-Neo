@@ -1,6 +1,5 @@
 import { Mail, Phone, MapPin, ExternalLink, Train } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
-
 const quickLinks = [
   { label: "Book Train Ticket",  href: "#booking" },
   { label: "PNR Status Check",   href: "#booking" },
@@ -22,10 +21,8 @@ const policies = [
   { label: "Terms of Use",        href: "#" },
   { label: "Accessibility",       href: "#" },
 ];
-
 export default function Footer() {
   const { t } = useLang();
-
   return (
     <footer className="relative z-10 mt-6">
       <div
@@ -36,8 +33,7 @@ export default function Footer() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-
-            {/* Brand column */}
+            {}
             <div>
               <div className="flex items-center gap-3 mb-5">
                 <div
@@ -97,8 +93,7 @@ export default function Footer() {
                 </div>
               </div>
             </div>
-
-            {/* Link columns */}
+            {}
             {[
               { title: t.quickLinks, items: quickLinks },
               { title: t.services,   items: services },
@@ -130,8 +125,7 @@ export default function Footer() {
               </div>
             ))}
           </div>
-
-          {/* Bottom bar */}
+          {}
           <div
             className="mt-12 pt-5 flex flex-col sm:flex-row items-center justify-between gap-4"
             style={{ borderTop: "1px solid var(--clr-border)" }}

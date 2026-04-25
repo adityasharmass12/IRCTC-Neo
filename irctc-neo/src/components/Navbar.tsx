@@ -1,24 +1,46 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sun, Moon, Menu, X, User, Globe } from "lucide-react";
+import { Sun, Moon, Menu, X, User, Globe, ChevronDown, LogOut } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { useLang } from "@/i18n/LanguageProvider";
 import LiveClock from "./LiveClock";
 import LoginModal from "./LoginModal";
-
+const TOKEN_KEY = "irctc_access_token";
+const REFRESH_KEY = "irctc_refresh_token";
+export function getAuthToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+export function storeTokens(access: string, refresh: string) {
+  localStorage.setItem(TOKEN_KEY, access);
+  localStorage.setItem(REFRESH_KEY, refresh);
+}
+export function clearTokens() {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(REFRESH_KEY);
+}
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const { lang, t, toggleLang } = useLang();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
-
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!getAuthToken());
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
+  const handleLoginSuccess = useCallback(() => {
+    setIsLoggedIn(true);
+    setLoginOpen(false);
+    setUserMenuOpen(true);
+  }, []);
+  const handleLogout = useCallback(() => {
+    clearTokens();
+    setIsLoggedIn(false);
+    setUserMenuOpen(false);
+  }, []);
   const navLinks = [
     { label: t.bookTicket,    href: "#booking" },
     { label: t.pnrStatus,     href: "#booking" },
@@ -27,7 +49,6 @@ export default function Navbar() {
     { label: t.eCatering,     href: "#services" },
     { label: t.help,          href: "#" },
   ];
-
   return (
     <>
       <nav
@@ -36,32 +57,37 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-[60px]">
-
-            {/* Logo */}
+            {}
             <a href="#" className="flex items-center gap-2.5 group no-underline">
               <img
                 src="/irctc-logo.png"
                 alt="IRCTC Logo"
-                className="h-10 w-auto object-contain"
-                style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.15))" }}
+                className="h-10 w-10 object-cover rounded-full"
+                style={{ filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.2))" }}
               />
-              <div className="flex flex-col">
+              <div className="flex flex-col justify-center">
                 <span
                   className="text-base font-bold tracking-tight leading-none"
                   style={{ fontFamily: "var(--font-heading)", color: "var(--clr-heading)" }}
                 >
                   IRCTC
                 </span>
+                {}
                 <span
-                  className="text-[9px] tracking-[0.1em] uppercase font-medium"
-                  style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
+                  className="text-[9px] italic mt-1.5"
+                  style={{
+                    fontFamily: "\"Sora\", sans-serif",
+                    color: "var(--clr-muted)",
+                    letterSpacing: "0.18em",
+                    fontStyle: "italic",
+                    lineHeight: 1,
+                  }}
                 >
-                  {t.indianRailways}
+                  Lifeline of the nation
                 </span>
               </div>
             </a>
-
-            {/* Nav Links */}
+            {}
             <div className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) => (
                 <a
@@ -73,13 +99,11 @@ export default function Navbar() {
                 </a>
               ))}
             </div>
-
-            {/* Right Actions */}
+            {}
             <div className="flex items-center gap-2">
-              {/* Live Clock */}
+              {}
               <LiveClock />
-
-              {/* Language Toggle — EN/HI */}
+              {}
               <motion.button
                 onClick={toggleLang}
                 className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-all cursor-pointer"
@@ -114,8 +138,7 @@ export default function Navbar() {
                   </motion.span>
                 </AnimatePresence>
               </motion.button>
-
-              {/* Theme toggle */}
+              {}
               <button
                 onClick={toggleTheme}
                 className="w-8 h-8 flex items-center justify-center rounded-md transition-all"
@@ -130,26 +153,78 @@ export default function Navbar() {
                   <Moon className="w-4 h-4" />
                 )}
               </button>
-
-              {/* Login */}
-              <button
-                className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md text-white transition-all cursor-pointer border-none"
-                style={{
-                  fontFamily: "var(--font-ui)",
-                  background: "var(--clr-primary)",
-                }}
-                onClick={() => setLoginOpen(true)}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "var(--clr-accent)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "var(--clr-primary)";
-                }}
-              >
-                <User className="w-4 h-4" />{t.login}
-              </button>
-
-              {/* Mobile menu toggle */}
+              {}
+              {!isLoggedIn ? (
+                <button
+                  className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md text-white transition-all cursor-pointer border-none"
+                  style={{
+                    fontFamily: "var(--font-ui)",
+                    background: "var(--clr-primary)",
+                  }}
+                  onClick={() => setLoginOpen(true)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "var(--clr-accent)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "var(--clr-primary)";
+                  }}
+                >
+                  <User className="w-4 h-4" />{t.login}
+                </button>
+              ) : (
+                <div className="relative">
+                  <button
+                    className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md text-white transition-all cursor-pointer border-none"
+                    style={{
+                      fontFamily: "var(--font-ui)",
+                      background: "var(--clr-primary)",
+                    }}
+                    onClick={() => setUserMenuOpen((v) => !v)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "var(--clr-accent)";
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!userMenuOpen) e.currentTarget.style.background = "var(--clr-primary)";
+                    }}
+                  >
+                    <User className="w-4 h-4" />
+                    <span>Account</span>
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${userMenuOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  <AnimatePresence>
+                    {userMenuOpen && (
+                      <motion.div
+                        className="absolute right-0 mt-2 w-44 rounded-xl overflow-hidden shadow-xl z-50"
+                        style={{
+                          background: "var(--clr-surface)",
+                          border: "1px solid var(--clr-border)",
+                          backdropFilter: "blur(20px)",
+                        }}
+                        initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                        transition={{ duration: 0.15 }}
+                      >
+                        <button
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors cursor-pointer border-none"
+                          style={{
+                            fontFamily: "var(--font-ui)",
+                            color: "var(--clr-danger)",
+                            background: "transparent",
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.background = "var(--clr-primary-dim)")}
+                          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                          onClick={handleLogout}
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Logout
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+              {}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="lg:hidden w-8 h-8 flex items-center justify-center rounded-md transition-colors"
@@ -162,8 +237,7 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
-
-      {/* Mobile Menu */}
+      {}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -214,7 +288,7 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-      <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} />
+      <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} onLoginSuccess={handleLoginSuccess} />
     </>
   );
 }

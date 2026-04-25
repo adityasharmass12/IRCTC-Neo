@@ -7,11 +7,9 @@ import {
 } from "lucide-react";
 import { stations, trainClasses, quotas, recentSearches, trainResults, type Station, type TrainResult } from "@/data/mockData";
 import { cn } from "@/lib/utils";
-import SearchResults from "./SearchResults";
+import SearchResultsModal from "./SearchResultsModal";
 import { useLang } from "@/i18n/LanguageProvider";
 import AmbientButton from "./AmbientButton";
-
-// ── Types ──────────────────────────────────────────────
 const tabIds = ["book", "pnr", "charts"] as const;
 type TabId = (typeof tabIds)[number];
 const tabIcons: Record<TabId, typeof Search> = {
@@ -19,10 +17,7 @@ const tabIcons: Record<TabId, typeof Search> = {
   pnr: FileSearch,
   charts: BarChart3,
 };
-
-// ── Toast system ──────────────────────────────────────
 interface Toast { id: number; message: string; type: "success" | "error" | "info"; }
-
 function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: number) => void }) {
   return (
     <div className="fixed bottom-6 right-6 z-[200] flex flex-col gap-2.5 items-end">
@@ -62,7 +57,6 @@ function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: 
     </div>
   );
 }
-
 function useToasts() {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const show = useCallback((message: string, type: Toast["type"] = "info") => {
@@ -73,11 +67,8 @@ function useToasts() {
   const remove = useCallback((id: number) => setToasts((prev) => prev.filter((t) => t.id !== id)), []);
   return { toasts, show, remove };
 }
-
-// ── Mouse Spotlight Hook ──────────────────────────────
 function useSpotlight() {
   const ref = useRef<HTMLDivElement>(null);
-
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const el = ref.current;
     if (!el) return;
@@ -88,17 +79,13 @@ function useSpotlight() {
     el.style.setProperty("--spotlight-y", `${y}px`);
     el.style.setProperty("--spotlight-opacity", "1");
   }, []);
-
   const handleMouseLeave = useCallback(() => {
     const el = ref.current;
     if (!el) return;
     el.style.setProperty("--spotlight-opacity", "0");
   }, []);
-
   return { ref, handleMouseMove, handleMouseLeave };
 }
-
-// ── Station input ─────────────────────────────────────
 function StationInput({
   label, value, onChange, placeholder, id
 }: {
@@ -109,15 +96,12 @@ function StationInput({
   const [query, setQuery] = useState(value);
   const ref = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
-
   const filtered = stations.filter((s) =>
     s.name.toLowerCase().includes(query.toLowerCase()) ||
     s.code.toLowerCase().includes(query.toLowerCase()) ||
     s.city.toLowerCase().includes(query.toLowerCase())
   );
-
   useEffect(() => { setQuery(value); }, [value]);
-
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -125,7 +109,6 @@ function StationInput({
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
-
   return (
     <div ref={ref} className="relative flex-1 min-w-0">
       <motion.label
@@ -163,7 +146,6 @@ function StationInput({
           className="input-field"
         />
       </div>
-
       <AnimatePresence>
         {open && filtered.length > 0 && (
           <motion.ul
@@ -203,8 +185,6 @@ function StationInput({
     </div>
   );
 }
-
-// ── Custom select ──────────────────────────────────────
 function CustomSelect({
   label, value, onChange, options, id
 }: {
@@ -223,7 +203,6 @@ function CustomSelect({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
   const selected = options.find((o) => o.code === value);
-
   return (
     <div ref={ref} className="relative flex-1 min-w-0">
       <label
@@ -278,15 +257,11 @@ function CustomSelect({
     </div>
   );
 }
-
-// ── Helper: tomorrow's date ────────────────────────────
 function getTomorrow() {
   const d = new Date();
   d.setDate(d.getDate() + 1);
   return d.toISOString().split("T")[0];
 }
-
-// ── Route chips data ───────────────────────────────────
 const routeChips = [
   { from: "NDLS", to: "BCT",  label: "NDLS → BCT" },
   { from: "SBC",  to: "MAS",  label: "SBC → MAS"  },
@@ -295,8 +270,6 @@ const routeChips = [
   { from: "MAS",  to: "SBC",  label: "MAS → SBC"  },
   { from: "CNB",  to: "NDLS", label: "CNB → NDLS" },
 ];
-
-// ── Booking Engine ─────────────────────────────────────
 export default function BookingEngine() {
   const [activeTab, setActiveTab] = useState<TabId>("book");
   const [from, setFrom] = useState("");
@@ -313,24 +286,19 @@ export default function BookingEngine() {
   const [dateFocused, setDateFocused] = useState(false);
   const { toasts, show: showToast, remove: removeToast } = useToasts();
   const { t } = useLang();
-
   // Build tabs array from translations
   const tabs = [
     { id: "book" as TabId,   label: t.bookTicket,     icon: tabIcons.book    },
     { id: "pnr" as TabId,    label: t.pnrStatus,      icon: tabIcons.pnr     },
     { id: "charts" as TabId, label: t.chartsVacancy,   icon: tabIcons.charts  },
   ];
-
-  // Mouse spotlight
   const spotlight = useSpotlight();
-
   const swapStations = useCallback(() => {
     const t = from; setFrom(to); setTo(t);
     setSwapRotated(true);
     setTimeout(() => setSwapRotated(false), 400);
     showToast("Stations swapped", "info");
   }, [from, to, showToast]);
-
   const handleSearch = () => {
     if (!from || !to) { showToast("Please enter both departure and destination stations.", "error"); return; }
     setIsSearching(true);
@@ -346,7 +314,6 @@ export default function BookingEngine() {
       );
     }, 2000);
   };
-
   const handleBook = (train: TrainResult, classCode: string) => {
     const cls = train.classes.find((c) => c.code === classCode);
     showToast(
@@ -354,7 +321,6 @@ export default function BookingEngine() {
       "success"
     );
   };
-
   const handlePnr = () => {
     if (pnrNumber.length !== 10) { showToast("Please enter a valid 10-digit PNR number.", "error"); return; }
     setIsSearching(true);
@@ -364,7 +330,6 @@ export default function BookingEngine() {
       showToast(`PNR ${pnrNumber}: Confirmed — Coach S4, Berth 23 (Lower)`, "success");
     }, 1500);
   };
-
   const handleVacancy = () => {
     if (!trainNumber) { showToast("Please enter a train number or name.", "error"); return; }
     setIsSearching(true);
@@ -374,12 +339,10 @@ export default function BookingEngine() {
       showToast(`${trainNumber}: Chart NOT prepared. Available: 3A-42, SL-185, 2S-320`, "success");
     }, 1500);
   };
-
   return (
     <>
       <section id="booking" className="relative z-10 w-full">
-
-        {/* Main card — glass with spotlight */}
+        {}
         <div
           ref={spotlight.ref}
           onMouseMove={spotlight.handleMouseMove}
@@ -387,8 +350,7 @@ export default function BookingEngine() {
           className="glass-card glass-card-spotlight overflow-hidden"
           style={{ maxWidth: "56rem", margin: "0 auto" }}
         >
-
-          {/* Tabs */}
+          {}
           <div
             className="flex relative z-10"
             style={{
@@ -415,12 +377,10 @@ export default function BookingEngine() {
               );
             })}
           </div>
-
-          {/* Tab Content */}
+          {}
           <div className="p-5 sm:p-6 lg:p-8 relative z-10">
             <AnimatePresence mode="wait">
-
-              {/* Book Ticket */}
+              {}
               {activeTab === "book" && (
                 <motion.div
                   key="book"
@@ -429,7 +389,7 @@ export default function BookingEngine() {
                   exit={{ opacity: 0, x: 15 }}
                   transition={{ type: "spring", stiffness: 500, damping: 40 }}
                 >
-                  {/* Row 1: From / Swap / To */}
+                  {}
                   <div className="flex flex-col lg:flex-row gap-3 items-stretch">
                     <StationInput
                       label={t.from}
@@ -438,7 +398,6 @@ export default function BookingEngine() {
                       placeholder={t.departureStation}
                       id="station-from"
                     />
-
                     <div className="flex items-end justify-center lg:px-2 lg:pb-0 self-center">
                       <motion.button
                         onClick={swapStations}
@@ -451,7 +410,6 @@ export default function BookingEngine() {
                         <ArrowRightLeft className="w-4 h-4" />
                       </motion.button>
                     </div>
-
                     <StationInput
                       label={t.to}
                       value={to}
@@ -460,13 +418,12 @@ export default function BookingEngine() {
                       id="station-to"
                     />
                   </div>
-
-                  {/* Row 2: Date, Class, Quota */}
+                  {}
                   <div
                     className="mt-5 pt-5 grid grid-cols-1 sm:grid-cols-3 gap-4"
                     style={{ borderTop: "1px solid var(--clr-border)" }}
                   >
-                    {/* Date */}
+                    {}
                     <div className="min-w-0">
                       <motion.label
                         htmlFor="travel-date"
@@ -509,8 +466,7 @@ export default function BookingEngine() {
                       id="quota"
                     />
                   </div>
-
-                  {/* Advanced Options */}
+                  {}
                   <div className="mt-4">
                     <button
                       onClick={() => setAdvancedOpen(!advancedOpen)}
@@ -554,8 +510,7 @@ export default function BookingEngine() {
                       )}
                     </AnimatePresence>
                   </div>
-
-                  {/* Quick Route Chips */}
+                  {}
                   <div className="mt-4 flex flex-wrap gap-2">
                     <span
                       className="text-[11px] font-semibold uppercase tracking-wider self-center"
@@ -582,8 +537,7 @@ export default function BookingEngine() {
                       </motion.button>
                     ))}
                   </div>
-
-                  {/* Recent Searches */}
+                  {}
                   <div className="mt-3 flex flex-wrap gap-2">
                     {recentSearches.slice(0, 3).map((rs, i) => (
                       <motion.button
@@ -611,8 +565,7 @@ export default function BookingEngine() {
                       </motion.button>
                     ))}
                   </div>
-
-                  {/* CTA: Search Trains — Ambient Glow Button */}
+                  {}
                   <div className="mt-6">
                     <AmbientButton
                       onClick={handleSearch}
@@ -635,8 +588,7 @@ export default function BookingEngine() {
                   </div>
                 </motion.div>
               )}
-
-              {/* PNR Status */}
+              {}
               {activeTab === "pnr" && (
                 <motion.div
                   key="pnr"
@@ -676,7 +628,7 @@ export default function BookingEngine() {
                         }}
                       />
                     </div>
-                    {/* Progress */}
+                    {}
                     <div className="flex items-center gap-2 mt-2">
                       <div
                         className="h-1.5 flex-1 rounded-full overflow-hidden"
@@ -720,8 +672,7 @@ export default function BookingEngine() {
                   </div>
                 </motion.div>
               )}
-
-              {/* Charts / Vacancy */}
+              {}
               {activeTab === "charts" && (
                 <motion.div
                   key="charts"
@@ -803,16 +754,17 @@ export default function BookingEngine() {
             </AnimatePresence>
           </div>
         </div>
-
-        {/* Search Results Panel */}
-        <SearchResults
+        {}
+        <SearchResultsModal
+          isOpen={showResults}
+          onClose={() => setShowResults(false)}
           results={trainResults}
-          isLoading={isSearching && showResults}
+          isLoading={isSearching}
           onBook={handleBook}
-          visible={showResults && activeTab === "book"}
+          routeText={from && to ? `${from.split(' (')[0]} → ${to.split(' (')[0]}` : "Search Results"}
+          dateText={date}
         />
       </section>
-
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </>
   );

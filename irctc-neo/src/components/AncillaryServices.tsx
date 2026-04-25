@@ -6,26 +6,21 @@ import {
 } from "lucide-react";
 import { features } from "@/data/mockData";
 import { useLang } from "@/i18n/LanguageProvider";
-
 const iconMap: Record<string, LucideIcon> = {
   Utensils, Bed, Map, Wallet, Shield, Package
 };
-
-// Professional gradient palette — muted, authoritative
 const serviceGradients = [
-  "linear-gradient(135deg, #1a3a5c, #2a5a8c)",   // navy — eCatering
-  "linear-gradient(135deg, #1e4d3a, #2a7a5a)",   // forest — Retiring Rooms
-  "linear-gradient(135deg, #3a3a6a, #5a5a9a)",   // indigo — Tourism
-  "linear-gradient(135deg, #5a3a1a, #8a5a2a)",   // amber — iMudra Wallet
-  "linear-gradient(135deg, #5a1a1a, #8a2a2a)",   // crimson — Insurance
-  "linear-gradient(135deg, #1a3a3a, #2a5a5a)",   // teal — Cargo
+  "linear-gradient(135deg, #1a3a5c, #2a5a8c)",   
+  "linear-gradient(135deg, #1e4d3a, #2a7a5a)",   
+  "linear-gradient(135deg, #3a3a6a, #5a5a9a)",   
+  "linear-gradient(135deg, #5a3a1a, #8a5a2a)",   
+  "linear-gradient(135deg, #5a1a1a, #8a2a2a)",   
+  "linear-gradient(135deg, #1a3a3a, #2a5a5a)",   
 ];
-
 const containerVariants: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.1 } },
 };
-
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 30, scale: 0.96 },
   visible: {
@@ -33,8 +28,6 @@ const cardVariants: Variants = {
     transition: { type: "spring", stiffness: 300, damping: 28 },
   },
 };
-
-// ── 3D Tilt Card ──────────────────────────────────────
 function TiltCard({
   children,
   className,
@@ -43,7 +36,6 @@ function TiltCard({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const el = ref.current;
     if (!el) return;
@@ -55,17 +47,14 @@ function TiltCard({
     const rotateX = ((y - centerY) / centerY) * -4;
     const rotateY = ((x - centerX) / centerX) * 4;
     el.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02) translateY(-5px)`;
-    // Spotlight on card
     el.style.setProperty("--spotlight-x", `${x}px`);
     el.style.setProperty("--spotlight-y", `${y}px`);
   }, []);
-
   const handleMouseLeave = useCallback(() => {
     const el = ref.current;
     if (!el) return;
     el.style.transform = "perspective(800px) rotateX(0) rotateY(0) scale3d(1, 1, 1) translateY(0)";
   }, []);
-
   return (
     <div
       ref={ref}
@@ -79,7 +68,7 @@ function TiltCard({
       }}
     >
       {children}
-      {/* Spotlight overlay */}
+      {}
       <div
         style={{
           position: "absolute",
@@ -93,15 +82,12 @@ function TiltCard({
     </div>
   );
 }
-
 export default function AncillaryServices() {
   const { t } = useLang();
-
   return (
     <section id="services" className="relative z-10 py-16 sm:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Section header */}
+        {}
         <motion.div
           className="text-center mb-14"
           initial={{ opacity: 0, y: 30 }}
@@ -138,8 +124,7 @@ export default function AncillaryServices() {
             {t.servicesDesc}
           </p>
         </motion.div>
-
-        {/* Cards grid */}
+        {}
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
           variants={containerVariants}
@@ -150,14 +135,13 @@ export default function AncillaryServices() {
           {features.map((feature, index) => {
             const Icon = iconMap[feature.icon] || Package;
             const grad = serviceGradients[index % serviceGradients.length];
-
             return (
               <motion.div
                 key={feature.title}
                 variants={cardVariants}
               >
                 <TiltCard className="service-card p-6 flex flex-col gap-4 relative overflow-hidden">
-                  {/* Icon */}
+                  {}
                   <motion.div
                     className="w-12 h-12 rounded-xl flex items-center justify-center"
                     style={{ background: grad }}
@@ -166,8 +150,7 @@ export default function AncillaryServices() {
                   >
                     <Icon className="w-6 h-6 text-white" />
                   </motion.div>
-
-                  {/* Content */}
+                  {}
                   <div>
                     <h3
                       className="text-base font-semibold mb-2 flex items-center gap-2"
@@ -186,8 +169,7 @@ export default function AncillaryServices() {
                       {feature.description}
                     </p>
                   </div>
-
-                  {/* CTA link */}
+                  {}
                   <div>
                     <motion.button
                       className="text-xs font-semibold flex items-center gap-1.5 transition-colors"

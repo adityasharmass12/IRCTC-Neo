@@ -46,7 +46,6 @@ export interface TrainResult {
     price: number;
   }[];
 }
-
 export const stations: Station[] = [
   { code: "NDLS", name: "New Delhi", city: "Delhi" },
   { code: "BCT", name: "Mumbai Central", city: "Mumbai" },
@@ -73,14 +72,12 @@ export const stations: Station[] = [
   { code: "UDZ", name: "Udaipur City", city: "Udaipur" },
   { code: "DBG", name: "Darbhanga Junction", city: "Darbhanga" },
 ];
-
 export const recentSearches: RecentSearch[] = [
   { from: "NDLS", to: "BCT", date: "2026-04-25" },
   { from: "SBC", to: "MAS", date: "2026-04-22" },
   { from: "HWH", to: "NDLS", date: "2026-04-28" },
   { from: "JP", to: "ADI", date: "2026-05-01" },
 ];
-
 export const liveAlerts: LiveAlert[] = [
   { id: "a1", priority: "high", message: "Vande Bharat Express 22439 rescheduled — revised departure 06:45 AM due to fog.", timestamp: "2026-04-19T05:30:00Z" },
   { id: "a2", priority: "medium", message: "Tatkal booking for 20th April opens at 10:00 AM. Plan your travel in advance.", timestamp: "2026-04-19T08:00:00Z" },
@@ -89,7 +86,6 @@ export const liveAlerts: LiveAlert[] = [
   { id: "a5", priority: "medium", message: "eCatering available on Shatabdi routes — order up to 2 hours before departure.", timestamp: "2026-04-19T11:30:00Z" },
   { id: "a6", priority: "high", message: "Platform change: 12951 Mumbai Rajdhani departs from Platform 16 at New Delhi.", timestamp: "2026-04-19T12:00:00Z" },
 ];
-
 export const features: Feature[] = [
   { icon: "Utensils", title: "eCatering — Meals on Train", description: "Order food from partner restaurants delivered to your seat. Available on 400+ trains across India.", gradient: "from-orange-500 to-amber-400" },
   { icon: "Bed", title: "Retiring Rooms", description: "Book comfortable rooms and dormitories at 300+ stations. Hourly and full-day options.", gradient: "from-blue-500 to-cyan-400" },
@@ -98,7 +94,6 @@ export const features: Feature[] = [
   { icon: "Shield", title: "Travel Insurance", description: "Travel insurance from ₹0.92 covering journeys up to 10,000 km. Accidents and natural calamities included.", gradient: "from-rose-500 to-pink-400" },
   { icon: "Package", title: "Cargo & Parcel", description: "Send parcels across India via Indian Railways network with real-time tracking.", gradient: "from-sky-500 to-indigo-400" },
 ];
-
 export const trainClasses: TrainClass[] = [
   { code: "ALL", name: "All Classes" },
   { code: "1A", name: "AC First Class (1A)" },
@@ -110,7 +105,6 @@ export const trainClasses: TrainClass[] = [
   { code: "EC", name: "Exec. Chair Car (EC)" },
   { code: "2S", name: "Second Sitting (2S)" },
 ];
-
 export const quotas: Quota[] = [
   { code: "GN", name: "General Quota" },
   { code: "TQ", name: "Tatkal Quota" },
@@ -122,7 +116,6 @@ export const quotas: Quota[] = [
   { code: "DP", name: "Duty Pass Quota" },
   { code: "SS", name: "Senior Citizen / Lower Berth" },
 ];
-
 export const trainResults: TrainResult[] = [
   {
     id: "t1",
@@ -220,6 +213,5 @@ export const trainResults: TrainResult[] = [
     ],
   },
 ];
-
 export const TRAIN_TYPES = ["all", "rajdhani", "shatabdi", "garib", "superfast", "express", "mail"] as const;
 export type TrainType = typeof TRAIN_TYPES[number];

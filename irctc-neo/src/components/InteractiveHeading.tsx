@@ -1,18 +1,5 @@
 import { useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-
-/**
- * InteractiveHeading — "Cinematic Expand & Shine" effect.
- *
- * On hover:
- *  • letter-spacing smoothly expands
- *  • a bright gradient "light sweep" (sheen) passes over the text L→R
- *  • text-shadow shifts angle based on cursor position (parallax shadow)
- *
- * Uses CSS background-clip: text + animated background-position for the sheen,
- * keeping the heading as a single block (no per-letter splitting) for maximum
- * font-rendering quality with Unbounded.
- */
 export default function InteractiveHeading({
   line1,
   line2,
@@ -25,7 +12,6 @@ export default function InteractiveHeading({
   const ref = useRef<HTMLHeadingElement>(null);
   const [shadowOffset, setShadowOffset] = useState({ x: 0, y: 4 });
   const [isHovered, setIsHovered] = useState(false);
-
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     const el = ref.current;
     if (!el) return;
@@ -36,13 +22,11 @@ export default function InteractiveHeading({
     const dy = (e.clientY - cy) / (rect.height / 2);
     setShadowOffset({ x: dx * 10, y: dy * 10 + 4 });
   }, []);
-
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => {
     setIsHovered(false);
     setShadowOffset({ x: 0, y: 4 });
   };
-
   return (
     <motion.h1
       ref={ref}
@@ -66,12 +50,11 @@ export default function InteractiveHeading({
         letterSpacing: { type: "spring", stiffness: 300, damping: 30 },
       }}
     >
-      {/* Line 1 — main heading text */}
+      {}
       <span className="cinematic-line" style={{ display: "block" }}>
         {line1}
       </span>
-
-      {/* Line 2 — accent color with the light-sweep sheen */}
+      {}
       <span
         className={`cinematic-line cinematic-sheen ${isHovered ? "cinematic-sheen--active" : ""}`}
         style={{ display: "block" }}
