@@ -488,7 +488,7 @@ export default function BookingCheckoutModal({
                   </p>
                 </div>
               </div>
-              <button
+              <motion.button
                 onClick={onClose}
                 className="w-10 h-10 rounded-full flex items-center justify-center transition-colors border-none cursor-pointer"
                 style={{
@@ -500,54 +500,11 @@ export default function BookingCheckoutModal({
                 whileTap={{ scale: 0.95 }}
               >
                 <X className="w-5 h-5" />
-              </button>
+              </motion.button>
             </div>
 
             {/* ── Scrollable Content ─────────────────────────── */}
             <div className="flex-1 overflow-y-auto">
-              <div className="max-w-6xl mx-auto py-8 px-4 lg:px-6">
-                <div className="grid lg:grid-cols-3 gap-8">
-                }}
-                whileHover={{ scale: 1.03, background: "rgba(255,255,255,0.10)" }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Search
-              </motion.button>
-              <div
-                className="h-6 w-px"
-                style={{ background: "rgba(255,255,255,0.10)" }}
-              />
-              <div>
-                <h1
-                  className="text-lg font-bold"
-                  style={{ fontFamily: "var(--font-heading)", color: "var(--clr-heading)" }}
-                >
-                  Review Your Booking
-                </h1>
-                <p
-                  className="text-xs mt-0.5"
-                  style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
-                >
-                  Fill in passenger details to continue
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={onClose}
-              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors border-none cursor-pointer"
-              style={{
-                color: "var(--clr-muted)",
-                background: "rgba(255,255,255,0.06)",
-                border: "1px solid rgba(255,255,255,0.10)",
-              }}
-              whileHover={{ scale: 1.08, background: "rgba(255,255,255,0.12)" }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
           {/* ── Content Grid ────────────────────────────────────── */}
           <div className="max-w-6xl mx-auto py-8 px-4 lg:px-6">
             <div className="grid lg:grid-cols-3 gap-8">
@@ -914,7 +871,8 @@ export default function BookingCheckoutModal({
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
+      </motion.div>
         </>
       )}
     </AnimatePresence>

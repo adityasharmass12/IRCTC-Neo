@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sun, Moon, Menu, X, User, Globe, ChevronDown, LogOut } from "lucide-react";
+import {
+  Sun, Moon, Menu, X, User, Globe, ChevronDown, LogOut,
+  UserCircle, Receipt, XCircle, Settings, Train
+} from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { useLang } from "@/i18n/LanguageProvider";
 import LiveClock from "./LiveClock";
@@ -194,31 +197,117 @@ export default function Navbar() {
                   <AnimatePresence>
                     {userMenuOpen && (
                       <motion.div
-                        className="absolute right-0 mt-2 w-44 rounded-xl overflow-hidden shadow-xl z-50"
+                        className="absolute right-0 mt-2 w-72 rounded-2xl overflow-hidden shadow-2xl z-50"
                         style={{
-                          background: "var(--clr-surface)",
-                          border: "1px solid var(--clr-border)",
-                          backdropFilter: "blur(20px)",
+                          background: "rgba(15,23,42,0.85)",
+                          backdropFilter: "blur(28px) saturate(1.6)",
+                          WebkitBackdropFilter: "blur(28px) saturate(1.6)",
+                          border: "1px solid rgba(255,255,255,0.12)",
+                          boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 0 40px rgba(74,130,184,0.08), inset 0 1px 0 rgba(255,255,255,0.08)",
                         }}
-                        initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                        initial={{ opacity: 0, y: -12, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                        transition={{ duration: 0.15 }}
+                        exit={{ opacity: 0, y: -12, scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 32 }}
                       >
-                        <button
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors cursor-pointer border-none"
+                        {/* Header — Profile */}
+                        <div
+                          className="px-5 py-4 flex items-center gap-3.5"
                           style={{
-                            fontFamily: "var(--font-ui)",
-                            color: "var(--clr-danger)",
-                            background: "transparent",
+                            background: "rgba(255,255,255,0.04)",
+                            borderBottom: "1px solid rgba(255,255,255,0.08)",
                           }}
-                          onMouseEnter={(e) => (e.currentTarget.style.background = "var(--clr-primary-dim)")}
-                          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-                          onClick={handleLogout}
                         >
-                          <LogOut className="w-4 h-4" />
-                          Logout
-                        </button>
+                          <div
+                            className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                            style={{
+                              background: "linear-gradient(135deg, var(--clr-primary), var(--clr-accent))",
+                              boxShadow: "0 4px 16px rgba(74,130,184,0.25)",
+                            }}
+                          >
+                            <UserCircle className="w-7 h-7 text-white" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p
+                              className="font-bold truncate"
+                              style={{
+                                fontFamily: "var(--font-heading)",
+                                fontSize: "0.9375rem",
+                                color: "var(--clr-heading)",
+                              }}
+                            >
+                              Aditya Sharma
+                            </p>
+                            <p
+                              className="text-xs font-mono truncate"
+                              style={{
+                                fontFamily: "var(--font-mono)",
+                                color: "var(--clr-primary)",
+                                opacity: 0.85,
+                              }}
+                            >
+                              @aditya_226180
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Menu Items */}
+                        <div className="py-2">
+                          {[
+                            { icon: User, label: "My Profile" },
+                            { icon: Receipt, label: "My Transactions" },
+                            { icon: XCircle, label: "Cancel Ticket" },
+                            { icon: Settings, label: "Account Settings" },
+                          ].map(({ icon: Icon, label }) => (
+                            <button
+                              key={label}
+                              className="w-full flex items-center gap-3.5 px-5 py-3 text-sm font-medium transition-all cursor-pointer border-none"
+                              style={{
+                                fontFamily: "var(--font-ui)",
+                                color: "var(--clr-text)",
+                                background: "transparent",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "rgba(74,130,184,0.12)";
+                                e.currentTarget.style.color = "var(--clr-primary)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "transparent";
+                                e.currentTarget.style.color = "var(--clr-text)";
+                              }}
+                            >
+                              <Icon className="w-4.5 h-4.5 flex-shrink-0" style={{ color: "var(--clr-muted)" }} />
+                              <span>{label}</span>
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Footer — Sign Out */}
+                        <div
+                          className="px-2 pb-2"
+                          style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+                        >
+                          <button
+                            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all cursor-pointer border-none"
+                            style={{
+                              fontFamily: "var(--font-ui)",
+                              color: "#EF4444",
+                              background: "rgba(239,68,68,0.08)",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = "rgba(239,68,68,0.16)";
+                              e.currentTarget.style.color = "#EF4444";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = "rgba(239,68,68,0.08)";
+                              e.currentTarget.style.color = "#EF4444";
+                            }}
+                            onClick={handleLogout}
+                          >
+                            <LogOut className="w-4 h-4" />
+                            Sign Out
+                          </button>
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>

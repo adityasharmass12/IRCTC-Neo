@@ -9,6 +9,8 @@ import { stations, trainClasses, quotas, recentSearches, trainResults, type Stat
 import { cn } from "@/lib/utils";
 import SearchResultsModal from "./SearchResultsModal";
 import BookingCheckoutModal, { type SelectedClass } from "./BookingCheckoutModal";
+import PnrStatusModal from "./PnrStatusModal";
+import ChartsModal from "./ChartsModal";
 import { useLang } from "@/i18n/LanguageProvider";
 import AmbientButton from "./AmbientButton";
 const tabIds = ["book", "pnr", "charts"] as const;
@@ -281,12 +283,15 @@ export default function BookingEngine() {
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [pnrNumber, setPnrNumber]     = useState("");
   const [trainNumber, setTrainNumber]   = useState("");
+  const [boardingStation, setBoardingStation] = useState("");
   const [isSearching, setIsSearching]   = useState(false);
   const [showResults, setShowResults]   = useState(false);
   const [bookingTrain, setBookingTrain] = useState<TrainResult | null>(null);
   const [bookingClass, setBookingClass] = useState<SelectedClass | null>(null);
   const [swapRotated, setSwapRotated]  = useState(false);
   const [dateFocused, setDateFocused] = useState(false);
+  const [pnrModalOpen, setPnrModalOpen] = useState(false);
+  const [chartsModalOpen, setChartsModalOpen] = useState(false);
   const { toasts, show: showToast, remove: removeToast } = useToasts();
   const { t } = useLang();
   // Build tabs array from translations
@@ -336,17 +341,17 @@ export default function BookingEngine() {
     showToast("Checking PNR status...", "info");
     setTimeout(() => {
       setIsSearching(false);
-      showToast(`PNR ${pnrNumber}: Confirmed — Coach S4, Berth 23 (Lower)`, "success");
-    }, 1500);
+      setPnrModalOpen(true);
+    }, 1200);
   };
   const handleVacancy = () => {
     if (!trainNumber) { showToast("Please enter a train number or name.", "error"); return; }
     setIsSearching(true);
-    showToast("Checking availability...", "info");
+    showToast("Loading charts...", "info");
     setTimeout(() => {
       setIsSearching(false);
-      showToast(`${trainNumber}: Chart NOT prepared. Available: 3A-42, SL-185, 2S-320`, "success");
-    }, 1500);
+      setChartsModalOpen(true);
+    }, 1200);
   };
   return (
     <>
@@ -616,7 +621,7 @@ export default function BookingEngine() {
                     </label>
                     <div className="relative group">
                       <FileSearch
-                        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
+                        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5"
                         style={{ color: "var(--clr-primary)" }}
                       />
                       <input
@@ -631,14 +636,16 @@ export default function BookingEngine() {
                         className="input-field"
                         style={{
                           fontFamily: "var(--font-mono)",
-                          paddingLeft: "44px",
-                          fontSize: "1.1rem",
-                          letterSpacing: "0.2em",
+                          paddingLeft: "48px",
+                          fontSize: "1.375rem",
+                          letterSpacing: "0.25em",
+                          textAlign: "center",
+                          height: "60px",
                         }}
                       />
                     </div>
                     {}
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-2 mt-3">
                       <div
                         className="h-1.5 flex-1 rounded-full overflow-hidden"
                         style={{ background: pnrNumber.length >= 10 ? "rgba(19,136,8,0.2)" : "var(--clr-border)" }}
@@ -660,7 +667,7 @@ export default function BookingEngine() {
                     >
                       {t.pnrHelper}
                     </p>
-                    <div className="mt-4" style={{ maxWidth: "220px" }}>
+                    <div className="mt-5" style={{ maxWidth: "240px" }}>
                       <AmbientButton
                         onClick={handlePnr}
                         disabled={isSearching}
@@ -668,14 +675,16 @@ export default function BookingEngine() {
                       >
                         {isSearching ? (
                           <motion.div
-                            className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full"
+                            className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full"
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                           />
                         ) : (
-                          <Search className="w-4 h-4" />
+                          <>
+                            <Search className="w-4 h-4" />
+                            <span>{t.checkPnrStatus}</span>
+                          </>
                         )}
-                        {isSearching ? t.checking : t.checkPnrStatus}
                       </AmbientButton>
                     </div>
                   </div>
@@ -712,6 +721,30 @@ export default function BookingEngine() {
                         className="input-field"
                         style={{ fontFamily: "var(--font-ui)", paddingLeft: "44px" }}
                       />
+                    </div>
+                    <div className="mt-4">
+                      <label
+                        htmlFor="boarding-station"
+                        className="block text-[11px] font-semibold mb-1.5 uppercase tracking-[0.12em]"
+                        style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
+                      >
+                        Boarding Station
+                      </label>
+                      <div className="relative group">
+                        <MapPin
+                          className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
+                          style={{ color: "var(--clr-primary)" }}
+                        />
+                        <input
+                          id="boarding-station"
+                          type="text"
+                          value={boardingStation}
+                          onChange={(e) => setBoardingStation(e.target.value)}
+                          placeholder="Select boarding station"
+                          className="input-field"
+                          style={{ fontFamily: "var(--font-ui)", paddingLeft: "44px" }}
+                        />
+                      </div>
                     </div>
                     <div className="mt-4">
                       <label
@@ -782,6 +815,18 @@ export default function BookingEngine() {
           dateText={date}
           setBookingTrain={setBookingTrain}
           setBookingClass={setBookingClass}
+        />
+        <PnrStatusModal
+          isOpen={pnrModalOpen}
+          onClose={() => setPnrModalOpen(false)}
+          pnrNumber={pnrNumber}
+        />
+        <ChartsModal
+          isOpen={chartsModalOpen}
+          onClose={() => setChartsModalOpen(false)}
+          trainNumber={trainNumber}
+          boardingStation={boardingStation}
+          journeyDate={date}
         />
       </section>
       <ToastContainer toasts={toasts} onRemove={removeToast} />

@@ -35,6 +35,7 @@ export default function LiveClock() {
           initial={{ opacity: 0.6, y: 2 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
+          className="tabular-nums"
           style={{ fontVariantNumeric: "tabular-nums" }}
         >
           {formatted}
