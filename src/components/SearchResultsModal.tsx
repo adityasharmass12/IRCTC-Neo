@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { TRAIN_TYPES, type TrainType, type TrainResult } from "@/data/mockData";
 import { cn } from "@/lib/utils";
+import WaitlistIntelligenceBadge from "./WaitlistIntelligenceBadge";
 interface SearchResultsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -360,9 +361,18 @@ function TrainCard({ train, onBook }: { train: TrainResult; onBook: (train: Trai
                   </div>
                   {}
                   <div className="flex flex-col items-center justify-center gap-1.5 w-1/4">
-                    <span className={cn("avail-badge text-xs px-3 py-1", badge.cls)}>
-                      {badge.label}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={cn("avail-badge text-xs px-3 py-1", badge.cls)}>
+                        {badge.label}
+                      </span>
+                      {badge.cls === "avail-waitlist" && (
+                        <WaitlistIntelligenceBadge
+                          trainCode={train.trainNo}
+                          classCode={cls.code}
+                          isWaitlisted={true}
+                        />
+                      )}
+                    </div>
                     <span
                       className="text-[11px] font-medium"
                       style={{ fontFamily: "var(--font-mono)", color: "var(--clr-muted)" }}

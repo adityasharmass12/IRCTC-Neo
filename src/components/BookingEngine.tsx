@@ -11,6 +11,8 @@ import SearchResultsModal from "./SearchResultsModal";
 import BookingCheckoutModal, { type SelectedClass } from "./BookingCheckoutModal";
 import PnrStatusModal from "./PnrStatusModal";
 import ChartsModal from "./ChartsModal";
+import EnhancedStationInput from "./EnhancedStationInput";
+import FlexibleDateCalendar from "./FlexibleDateCalendar";
 import { useLang } from "@/i18n/LanguageProvider";
 import AmbientButton from "./AmbientButton";
 const tabIds = ["book", "pnr", "charts"] as const;
@@ -95,99 +97,13 @@ function StationInput({
   label: string; value: string; onChange: (val: string, station?: Station) => void;
   placeholder: string; id: string;
 }) {
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState(value);
-  const ref = useRef<HTMLDivElement>(null);
-  const [isFocused, setIsFocused] = useState(false);
-  const filtered = stations.filter((s) =>
-    s.name.toLowerCase().includes(query.toLowerCase()) ||
-    s.code.toLowerCase().includes(query.toLowerCase()) ||
-    s.city.toLowerCase().includes(query.toLowerCase())
-  );
-  useEffect(() => { setQuery(value); }, [value]);
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-  return (
-    <div ref={ref} className="relative flex-1 min-w-0">
-      <motion.label
-        htmlFor={id}
-        className="block text-[11px] font-semibold mb-1.5 uppercase tracking-[0.12em]"
-        style={{ fontFamily: "var(--font-ui)", color: isFocused ? "var(--clr-primary)" : "var(--clr-muted)" }}
-        animate={{
-          scale: isFocused ? 1.02 : 1,
-          color: isFocused ? "var(--clr-primary)" : "var(--clr-muted)",
-        }}
-        transition={{ duration: 0.2 }}
-      >
-        {label}
-      </motion.label>
-      <div className="relative group">
-        <motion.div
-          className="absolute left-3.5 top-1/2 -translate-y-1/2"
-          animate={{
-            scale: isFocused ? 1.15 : 1,
-            color: isFocused ? "var(--clr-primary)" : "var(--clr-primary)",
-          }}
-          transition={{ type: "spring", stiffness: 400, damping: 25 }}
-        >
-          <MapPin className="w-4 h-4" style={{ color: "var(--clr-primary)" }} />
-        </motion.div>
-        <input
-          id={id}
-          type="text"
-          value={query}
-          placeholder={placeholder}
-          autoComplete="off"
-          onFocus={() => { setOpen(true); setIsFocused(true); }}
-          onBlur={() => setIsFocused(false)}
-          onChange={(e) => { setQuery(e.target.value); setOpen(true); onChange(e.target.value); }}
-          className="input-field"
-        />
-      </div>
-      <AnimatePresence>
-        {open && filtered.length > 0 && (
-          <motion.ul
-            className="autocomplete-dropdown"
-            initial={{ opacity: 0, y: -8, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 500, damping: 35 }}
-          >
-            {filtered.slice(0, 8).map((station) => (
-              <li key={station.code}>
-                <button
-                  type="button"
-                  className="autocomplete-item"
-                  onClick={() => {
-                    setQuery(`${station.name} (${station.code})`);
-                    onChange(`${station.name} (${station.code})`, station);
-                    setOpen(false);
-                  }}
-                >
-                  <MapPin className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--clr-primary)" }} />
-                  <div className="text-left min-w-0">
-                    <span style={{ color: "var(--clr-heading)", fontWeight: 600 }}>{station.name}</span>
-                    <span className="ml-2 text-xs font-mono" style={{ color: "var(--clr-primary)" }}>
-                      {station.code}
-                    </span>
-                    <span className="ml-1 text-xs" style={{ color: "var(--clr-muted)" }}>
-                      — {station.city}
-                    </span>
-                  </div>
-                </button>
-              </li>
-            ))}
-          </motion.ul>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+  // This function is replaced by EnhancedStationInput component
+  // Keeping this stub for backward compatibility in case it's called elsewhere
+  return null;
 }
+
+// Original StationInput is now superseded by EnhancedStationInput
+// which includes smart alias matching and partial search capabilities
 function CustomSelect({
   label, value, onChange, options, id
 }: {
@@ -281,6 +197,7 @@ export default function BookingEngine() {
   const [trainClass, setTrainClass] = useState("ALL");
   const [quota, setQuota] = useState("GN");
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [flexibleDateEnabled, setFlexibleDateEnabled] = useState(false);
   const [pnrNumber, setPnrNumber]     = useState("");
   const [trainNumber, setTrainNumber]   = useState("");
   const [boardingStation, setBoardingStation] = useState("");
@@ -405,7 +322,7 @@ export default function BookingEngine() {
                 >
                   {}
                   <div className="flex flex-col lg:flex-row gap-3 items-stretch">
-                    <StationInput
+                    <EnhancedStationInput
                       label={t.from}
                       value={from}
                       onChange={(val) => setFrom(val)}
@@ -424,7 +341,7 @@ export default function BookingEngine() {
                         <ArrowRightLeft className="w-4 h-4" />
                       </motion.button>
                     </div>
-                    <StationInput
+                    <EnhancedStationInput
                       label={t.to}
                       value={to}
                       onChange={(val) => setTo(val)}
@@ -448,22 +365,24 @@ export default function BookingEngine() {
                       >
                         {t.date}
                       </motion.label>
-                      <div className="relative group">
-                        <Calendar
-                          className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
-                          style={{ color: "var(--clr-primary)" }}
-                        />
-                        <input
-                          id="travel-date"
-                          type="date"
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
-                          onFocus={() => setDateFocused(true)}
-                          onBlur={() => setDateFocused(false)}
-                          className="input-field"
-                          style={{ paddingLeft: "40px", fontFamily: "var(--font-ui)" }}
-                        />
-                      </div>
+                      {!flexibleDateEnabled && (
+                        <div className="relative group">
+                          <Calendar
+                            className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
+                            style={{ color: "var(--clr-primary)" }}
+                          />
+                          <input
+                            id="travel-date"
+                            type="date"
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            onFocus={() => setDateFocused(true)}
+                            onBlur={() => setDateFocused(false)}
+                            className="input-field"
+                            style={{ paddingLeft: "40px", fontFamily: "var(--font-ui)" }}
+                          />
+                        </div>
+                      )}
                     </div>
                     <CustomSelect
                       label={t.class}
@@ -480,6 +399,14 @@ export default function BookingEngine() {
                       id="quota"
                     />
                   </div>
+
+                  {flexibleDateEnabled && (
+                    <FlexibleDateCalendar
+                      selectedDate={date}
+                      onDateChange={setDate}
+                      isEnabled={flexibleDateEnabled}
+                    />
+                  )}
                   {}
                   <div className="mt-4">
                     <button
@@ -501,10 +428,10 @@ export default function BookingEngine() {
                         >
                           <div className="pt-3 pb-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
                             {[
-                              { icon: Accessibility, label: t.divyaangConcession },
-                              { icon: CreditCard,    label: t.railwayPass        },
-                              { icon: Users,         label: t.flexibleDate       },
-                            ].map(({ icon: Icon, label }) => (
+                              { icon: Accessibility, label: t.divyaangConcession, state: false },
+                              { icon: CreditCard,    label: t.railwayPass,        state: false },
+                              { icon: Users,         label: t.flexibleDate,       state: flexibleDateEnabled },
+                            ].map(({ icon: Icon, label, state }, idx) => (
                               <label
                                 key={label}
                                 className="flex items-center gap-2.5 text-sm cursor-pointer rounded-lg px-3 py-2 transition-colors"
@@ -514,6 +441,8 @@ export default function BookingEngine() {
                                   type="checkbox"
                                   className="w-4 h-4 rounded"
                                   style={{ accentColor: "var(--clr-primary)" }}
+                                  checked={state}
+                                  onChange={(e) => idx === 2 && setFlexibleDateEnabled(e.target.checked)}
                                 />
                                 <Icon className="w-4 h-4" style={{ color: "var(--clr-muted)" }} />
                                 {label}
