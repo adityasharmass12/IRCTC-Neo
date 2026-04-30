@@ -611,7 +611,7 @@ export default function BookingEngine() {
                         ) : (
                           <>
                             <Search className="w-4 h-4" />
-                            <span>{t.checkPnrStatus}</span>
+                            <span>Check Status</span>
                           </>
                         )}
                       </AmbientButton>
@@ -716,7 +716,7 @@ export default function BookingEngine() {
                         ) : (
                           <BarChart3 className="w-4 h-4" />
                         )}
-                        {isSearching ? t.checking : t.checkVacancy}
+                        {isSearching ? t.checking : "View Charts"}
                       </AmbientButton>
                     </div>
                   </div>
