@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Train, Calendar, MapPin, User, CheckCircle, AlertCircle } from "lucide-react";
 
@@ -44,6 +44,23 @@ const MOCK_PASSENGERS: Passenger[] = [
 ];
 
 export default function PnrStatusModal({ isOpen, onClose, pnrNumber }: PnrStatusModalProps) {
+  // Escape key listener
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [isOpen, onClose]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -54,7 +71,7 @@ export default function PnrStatusModal({ isOpen, onClose, pnrNumber }: PnrStatus
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
         >
-          {/* Backdrop */}
+          {/* Backdrop — Click to close */}
           <motion.div
             className="absolute inset-0"
             style={{
@@ -68,7 +85,7 @@ export default function PnrStatusModal({ isOpen, onClose, pnrNumber }: PnrStatus
             exit={{ opacity: 0 }}
           />
 
-          {/* Modal */}
+          {/* Modal Container — Prevents backdrop click propagation */}
           <motion.div
             className="relative z-10 w-full overflow-hidden"
             style={{ maxWidth: "520px" }}
@@ -77,6 +94,7 @@ export default function PnrStatusModal({ isOpen, onClose, pnrNumber }: PnrStatus
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.88, y: 40 }}
             transition={{ type: "spring", stiffness: 380, damping: 32 }}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Ticket-style card */}
             <div

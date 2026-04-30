@@ -243,11 +243,15 @@ function AppContent() {
     </>
   );
 }
+import AccountDashboard from "@/components/AccountDashboard";
+
 export default function App() {
+  const isAccountRoute = window.location.pathname === "/account";
+
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <AppContent />
+        {isAccountRoute ? <AccountDashboard /> : <AppContent />}
       </LanguageProvider>
     </ThemeProvider>
   );

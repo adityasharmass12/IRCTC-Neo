@@ -381,6 +381,25 @@ export default function BookingCheckoutModal({
   const [autoUpgrade, setAutoUpgrade] = useState(false);
   const [confirmOnly, setConfirmOnly] = useState(false);
 
+  // Escape key listener
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscapeKey);
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, onClose]);
+
   // Reset on open
   useEffect(() => {
     if (isOpen) {
@@ -389,9 +408,6 @@ export default function BookingCheckoutModal({
       setEmail("");
       setAutoUpgrade(false);
       setConfirmOnly(false);
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
     }
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
@@ -423,16 +439,16 @@ export default function BookingCheckoutModal({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop — Click to close */}
           <motion.div
             className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={handleBack}
+            onClick={onClose}
           />
 
-          {/* Panel — slides in from right */}
+          {/* Panel — slides in from right with click-outside protection */}
           <motion.div
             className="fixed top-0 right-0 bottom-0 z-[61] w-full max-w-6xl flex flex-col"
             style={{
@@ -443,6 +459,7 @@ export default function BookingCheckoutModal({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 350, damping: 35 }}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* ── Top Bar (always visible) ─────────────────────── */}
             <div
@@ -490,14 +507,23 @@ export default function BookingCheckoutModal({
               </div>
               <motion.button
                 onClick={onClose}
-                className="w-10 h-10 rounded-full flex items-center justify-center transition-colors border-none cursor-pointer"
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-all border-none cursor-pointer flex-shrink-0"
                 style={{
                   color: "var(--clr-muted)",
                   background: "rgba(255,255,255,0.06)",
                   border: "1px solid rgba(255,255,255,0.10)",
                 }}
-                whileHover={{ scale: 1.08, background: "rgba(255,255,255,0.12)" }}
-                whileTap={{ scale: 0.95 }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.12)";
+                  e.currentTarget.style.color = "#EF4444";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                  e.currentTarget.style.color = "var(--clr-muted)";
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
               </motion.button>

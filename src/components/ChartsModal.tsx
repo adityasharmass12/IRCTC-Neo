@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Train, MapPin, Calendar, CheckCircle, AlertCircle } from "lucide-react";
 
@@ -96,6 +96,23 @@ export default function ChartsModal({ isOpen, onClose, trainNumber, boardingStat
   const [activeClass, setActiveClass] = useState<ClassCode>("3A");
   const blocks = MOCK_VACANCY[activeClass];
 
+  // Escape key listener
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [isOpen, onClose]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -106,7 +123,7 @@ export default function ChartsModal({ isOpen, onClose, trainNumber, boardingStat
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
         >
-          {/* Backdrop */}
+          {/* Backdrop — Click to close */}
           <motion.div
             className="absolute inset-0"
             style={{
@@ -120,7 +137,7 @@ export default function ChartsModal({ isOpen, onClose, trainNumber, boardingStat
             exit={{ opacity: 0 }}
           />
 
-          {/* Modal */}
+          {/* Modal Container — Prevents backdrop click propagation */}
           <motion.div
             className="relative z-10 w-full overflow-hidden"
             style={{ maxWidth: "680px" }}
@@ -129,6 +146,7 @@ export default function ChartsModal({ isOpen, onClose, trainNumber, boardingStat
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.88, y: 40 }}
             transition={{ type: "spring", stiffness: 380, damping: 32 }}
+            onClick={(e) => e.stopPropagation()}
           >
             <div
               className="relative overflow-hidden"

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sun, Moon, Menu, X, User, Globe, ChevronDown, LogOut,
-  UserCircle, Receipt, XCircle, Settings, Train
+  UserCircle, Receipt, XCircle, Settings, Train, Wallet, Bell, ChevronRight, MapPin, Clock
 } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { useLang } from "@/i18n/LanguageProvider";
@@ -27,7 +27,6 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!getAuthToken());
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -37,12 +36,24 @@ export default function Navbar() {
   const handleLoginSuccess = useCallback(() => {
     setIsLoggedIn(true);
     setLoginOpen(false);
-    setUserMenuOpen(true);
   }, []);
   const handleLogout = useCallback(() => {
     clearTokens();
     setIsLoggedIn(false);
-    setUserMenuOpen(false);
+  }, []);
+
+  // Escape key listener for dropdowns
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMobileOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscapeKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
   }, []);
   const navLinks = [
     { label: t.bookTicket,    href: "#booking" },
@@ -176,141 +187,23 @@ export default function Navbar() {
                 </button>
               ) : (
                 <div className="relative">
-                  <button
-                    className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md text-white transition-all cursor-pointer border-none"
+                  <a
+                    href="/account"
+                    className="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md text-white transition-all cursor-pointer border-none no-underline"
                     style={{
                       fontFamily: "var(--font-ui)",
                       background: "var(--clr-primary)",
                     }}
-                    onClick={() => setUserMenuOpen((v) => !v)}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = "var(--clr-accent)";
                     }}
                     onMouseLeave={(e) => {
-                      if (!userMenuOpen) e.currentTarget.style.background = "var(--clr-primary)";
+                      e.currentTarget.style.background = "var(--clr-primary)";
                     }}
                   >
                     <User className="w-4 h-4" />
                     <span>Account</span>
-                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${userMenuOpen ? "rotate-180" : ""}`} />
-                  </button>
-                  <AnimatePresence>
-                    {userMenuOpen && (
-                      <motion.div
-                        className="absolute right-0 mt-2 w-72 rounded-2xl overflow-hidden shadow-2xl z-50"
-                        style={{
-                          background: "rgba(15,23,42,0.85)",
-                          backdropFilter: "blur(28px) saturate(1.6)",
-                          WebkitBackdropFilter: "blur(28px) saturate(1.6)",
-                          border: "1px solid rgba(255,255,255,0.12)",
-                          boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 0 40px rgba(74,130,184,0.08), inset 0 1px 0 rgba(255,255,255,0.08)",
-                        }}
-                        initial={{ opacity: 0, y: -12, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -12, scale: 0.95 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                      >
-                        {/* Header — Profile */}
-                        <div
-                          className="px-5 py-4 flex items-center gap-3.5"
-                          style={{
-                            background: "rgba(255,255,255,0.04)",
-                            borderBottom: "1px solid rgba(255,255,255,0.08)",
-                          }}
-                        >
-                          <div
-                            className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-                            style={{
-                              background: "linear-gradient(135deg, var(--clr-primary), var(--clr-accent))",
-                              boxShadow: "0 4px 16px rgba(74,130,184,0.25)",
-                            }}
-                          >
-                            <UserCircle className="w-7 h-7 text-white" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p
-                              className="font-bold truncate"
-                              style={{
-                                fontFamily: "var(--font-heading)",
-                                fontSize: "0.9375rem",
-                                color: "var(--clr-heading)",
-                              }}
-                            >
-                              Aditya Sharma
-                            </p>
-                            <p
-                              className="text-xs font-mono truncate"
-                              style={{
-                                fontFamily: "var(--font-mono)",
-                                color: "var(--clr-primary)",
-                                opacity: 0.85,
-                              }}
-                            >
-                              @aditya_226180
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Menu Items */}
-                        <div className="py-2">
-                          {[
-                            { icon: User, label: "My Profile" },
-                            { icon: Receipt, label: "My Transactions" },
-                            { icon: XCircle, label: "Cancel Ticket" },
-                            { icon: Settings, label: "Account Settings" },
-                          ].map(({ icon: Icon, label }) => (
-                            <button
-                              key={label}
-                              className="w-full flex items-center gap-3.5 px-5 py-3 text-sm font-medium transition-all cursor-pointer border-none"
-                              style={{
-                                fontFamily: "var(--font-ui)",
-                                color: "var(--clr-text)",
-                                background: "transparent",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = "rgba(74,130,184,0.12)";
-                                e.currentTarget.style.color = "var(--clr-primary)";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = "transparent";
-                                e.currentTarget.style.color = "var(--clr-text)";
-                              }}
-                            >
-                              <Icon className="w-4.5 h-4.5 flex-shrink-0" style={{ color: "var(--clr-muted)" }} />
-                              <span>{label}</span>
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* Footer — Sign Out */}
-                        <div
-                          className="px-2 pb-2"
-                          style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-                        >
-                          <button
-                            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-xl transition-all cursor-pointer border-none"
-                            style={{
-                              fontFamily: "var(--font-ui)",
-                              color: "#EF4444",
-                              background: "rgba(239,68,68,0.08)",
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = "rgba(239,68,68,0.16)";
-                              e.currentTarget.style.color = "#EF4444";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = "rgba(239,68,68,0.08)";
-                              e.currentTarget.style.color = "#EF4444";
-                            }}
-                            onClick={handleLogout}
-                          >
-                            <LogOut className="w-4 h-4" />
-                            Sign Out
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  </a>
                 </div>
               )}
               {}

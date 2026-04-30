@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Clock, ArrowRight, X, ChevronDown, ChevronUp, AlertCircle, CheckCircle
@@ -55,19 +55,31 @@ export default function SearchResultsModal({
 }: SearchResultsModalProps) {
   const [filter, setFilter] = useState<TrainType>("all");
   const [sort, setSort] = useState<"time" | "price" | "duration">("time");
+
+  // Escape key listener
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscapeKey);
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, onClose]);
+
   useEffect(() => {
     if (isOpen) {
       setFilter("all");
       setSort("time");
     }
-  }, [isOpen]);
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
   const filtered = results
     .filter((t) => filter === "all" || t.type === filter)
@@ -84,7 +96,7 @@ export default function SearchResultsModal({
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 flex justify-center items-start pt-20 pb-10 px-4 pointer-events-none">
-          {}
+          {/* Backdrop — Click to close */}
           <motion.div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto"
             initial={{ opacity: 0 }}
@@ -92,7 +104,7 @@ export default function SearchResultsModal({
             exit={{ opacity: 0 }}
             onClick={onClose}
           />
-          {}
+          {/* Modal Container — Prevents backdrop click propagation */}
           <motion.div
             className="relative w-full max-w-5xl h-[80vh] flex flex-col rounded-2xl pointer-events-auto shadow-2xl overflow-hidden"
             style={{
@@ -103,8 +115,9 @@ export default function SearchResultsModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            onClick={(e) => e.stopPropagation()}
           >
-            {}
+            {/* Header with Close Button */}
             <div
               className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0"
               style={{ borderColor: "var(--clr-border)", background: "var(--clr-surface-2)" }}
@@ -117,13 +130,29 @@ export default function SearchResultsModal({
                   {dateText}
                 </p>
               </div>
-              <button
+              {/* Prominent Close Button with Hover Effect */}
+              <motion.button
                 onClick={onClose}
-                className="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-black/10 dark:hover:bg-white/10 border-none cursor-pointer"
-                style={{ color: "var(--clr-muted)" }}
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-all border-none cursor-pointer flex-shrink-0 ml-4"
+                style={{
+                  color: "var(--clr-muted)",
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.10)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.12)";
+                  e.currentTarget.style.color = "#EF4444";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                  e.currentTarget.style.color = "var(--clr-muted)";
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </motion.button>
             </div>
             {}
             <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">

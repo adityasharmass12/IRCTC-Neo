@@ -249,13 +249,22 @@ export default function LoginModal({
     }
   }, [username, password, onLoginSuccess]);
   useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+
     if (isOpen) {
+      document.addEventListener("keydown", handleEscapeKey);
       document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
     }
-    return () => { document.body.style.overflow = ""; };
-  }, [isOpen]);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, onClose]);
   return (
     <AnimatePresence>
       {isOpen && (
@@ -266,7 +275,7 @@ export default function LoginModal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
         >
-          {}
+          {/* Backdrop — Click to close */}
           <motion.div
             className="absolute inset-0"
             style={{
@@ -279,7 +288,7 @@ export default function LoginModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           />
-          {}
+          {/* Modal Container — Prevents backdrop click propagation */}
           <motion.div
             className="login-modal-glass relative z-10 w-full overflow-hidden"
             style={{ maxWidth: "440px" }}
@@ -293,18 +302,19 @@ export default function LoginModal({
               damping: 35,
               layout: { type: "spring", stiffness: 350, damping: 30 },
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            {}
+            {/* Prominent Close Button */}
             <motion.button
               onClick={onClose}
-              className="absolute top-4 right-4 z-50 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none"
+              className="absolute top-4 right-4 z-50 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border-none flex-shrink-0"
               style={{
                 background: "rgba(255,255,255,0.06)",
                 color: "var(--clr-muted)",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = "rgba(255,255,255,0.12)";
-                e.currentTarget.style.color = "var(--clr-danger)";
+                e.currentTarget.style.color = "#EF4444";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = "rgba(255,255,255,0.06)";
@@ -312,6 +322,7 @@ export default function LoginModal({
               }}
               whileHover={{ scale: 1.1, rotate: 90 }}
               whileTap={{ scale: 0.9 }}
+              aria-label="Close modal"
             >
               <X className="w-4 h-4" />
             </motion.button>
