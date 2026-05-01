@@ -164,7 +164,6 @@ export default function FlexibleDateCalendar({
                         ? "rgba(var(--clr-warning-rgb), 0.05)"
                         : "transparent",
                     color: isSelected ? "white" : "var(--clr-text)",
-                    ringOffsetColor: "var(--clr-surface)",
                   }}
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
