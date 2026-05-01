@@ -695,6 +695,7 @@ h3, h4, h5, h6, .font-heading {
   background: var(--clr-surface);
   border: 1px solid var(--clr-border);
   box-shadow: 0 12px 40px var(--clr-shadow);
+  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 }
 .autocomplete-item {
@@ -824,8 +825,8 @@ h3, h4, h5, h6, .font-heading {
   overflow: hidden;
   border-radius: var(--radius-card);
   background: rgba(255,255,255,0.06);
-  backdrop-filter: blur(16px) saturate(1.3);
   -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
   border: 1px solid rgba(255,255,255,0.10);
   box-shadow:
     0 8px 32px rgba(0,0,0,0.15),

@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { storeTokens } from "./Navbar";
 type ModalState = "login" | "agent-confirm" | "agent-otp" | "register";
-const API_BASE = "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 const slideVariants = {
   enter: (dir: number) => ({
     x: dir > 0 ? 60 : -60,
