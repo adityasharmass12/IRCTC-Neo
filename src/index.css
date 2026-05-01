@@ -226,8 +226,8 @@ h3, h4, h5, h6, .font-heading {
 }
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  backdrop-filter: blur(20px) saturate(1.5);
   border: 1px solid var(--clr-glass-border);
   box-shadow:
     0 8px 32px var(--glass-glow),
@@ -238,8 +238,8 @@ h3, h4, h5, h6, .font-heading {
 }
 .glass-strong {
   background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(30px) saturate(1.6);
   -webkit-backdrop-filter: blur(30px) saturate(1.6);
+  backdrop-filter: blur(30px) saturate(1.6);
   border: 1px solid var(--clr-glass-border);
   box-shadow:
     0 16px 48px var(--glass-glow),
@@ -263,8 +263,8 @@ h3, h4, h5, h6, .font-heading {
 .glass-card {
   position: relative;
   background: rgba(255,255,255,0.06);
-  backdrop-filter: blur(24px) saturate(1.5);
   -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  backdrop-filter: blur(24px) saturate(1.5);
   border-radius: var(--radius-card);
   overflow: hidden;
   box-shadow:
@@ -341,8 +341,8 @@ h3, h4, h5, h6, .font-heading {
 .card-flat {
   position: relative;
   background: rgba(255,255,255,0.06);
-  backdrop-filter: blur(24px) saturate(1.5);
   -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  backdrop-filter: blur(24px) saturate(1.5);
   border-radius: var(--radius-card);
   overflow: hidden;
   box-shadow:
@@ -1139,8 +1139,8 @@ h3, h4, h5, h6, .font-heading {
    ═══════════════════════════════════════════════════════ */
 .login-modal-glass {
   background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(40px) saturate(1.5);
   -webkit-backdrop-filter: blur(40px) saturate(1.5);
+  backdrop-filter: blur(40px) saturate(1.5);
   border-radius: 20px;
   border: 1px solid;
   border-image: linear-gradient(
