@@ -232,6 +232,9 @@ h3, h4, h5, h6, .font-heading {
   box-shadow:
     0 8px 32px var(--glass-glow),
     inset 0 1px 0 var(--glass-inner);
+  transform: translateZ(0);
+  will-change: transform, backdrop-filter;
+  backface-visibility: hidden;
 }
 .glass-strong {
   background: rgba(255,255,255,0.08);
@@ -241,6 +244,9 @@ h3, h4, h5, h6, .font-heading {
   box-shadow:
     0 16px 48px var(--glass-glow),
     inset 0 1px 0 var(--glass-inner);
+  transform: translateZ(0);
+  will-change: transform, backdrop-filter;
+  backface-visibility: hidden;
 }
 [data-theme="light"] .glass {
   background: rgba(255,255,255,0.55);
@@ -266,6 +272,9 @@ h3, h4, h5, h6, .font-heading {
     0 0 80px var(--glass-glow),
     inset 0 1px 0 var(--glass-inner);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateZ(0);
+  will-change: transform, backdrop-filter;
+  backface-visibility: hidden;
 }
 .glass-card::before {
   content: '';
@@ -341,6 +350,9 @@ h3, h4, h5, h6, .font-heading {
     0 0 60px var(--glass-glow),
     inset 0 1px 0 var(--glass-inner);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateZ(0);
+  will-change: transform, backdrop-filter;
+  backface-visibility: hidden;
 }
 .card-flat::before {
   content: '';
