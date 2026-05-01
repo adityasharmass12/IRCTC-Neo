@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { storeTokens } from "./Navbar";
 type ModalState = "login" | "agent-confirm" | "agent-otp" | "register";
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const API_BASE = import.meta.env.PROD ? (import.meta.env.VITE_API_BASE_URL || "/_/backend") : "http://localhost:8000";
 const slideVariants = {
   enter: (dir: number) => ({
     x: dir > 0 ? 60 : -60,
@@ -243,7 +243,7 @@ export default function LoginModal({
         setAuthError("Something went wrong. Please try again later.");
       }
     } catch {
-      setAuthError("Cannot connect to server. Ensure the backend is running on port 8000.");
+      setAuthError("Cannot connect to server. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -672,7 +672,7 @@ export default function LoginModal({
                             setAuthError(msg);
                           }
                         } catch {
-                          setAuthError("Cannot connect to server. Ensure the backend is running on port 8000.");
+                          setAuthError("Cannot connect to server. Please try again later.");
                         } finally {
                           setLoading(false);
                         }
