@@ -228,8 +228,7 @@ h3, h4, h5, h6, .font-heading {
   background: var(--glass-bg);
   backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
-  border: 1px solid;
-  border-image: linear-gradient(135deg, var(--glass-border-from), var(--glass-border-to)) 1;
+  border: 1px solid var(--clr-glass-border);
   box-shadow:
     0 8px 32px var(--glass-glow),
     inset 0 1px 0 var(--glass-inner);
@@ -238,8 +237,7 @@ h3, h4, h5, h6, .font-heading {
   background: rgba(255,255,255,0.08);
   backdrop-filter: blur(30px) saturate(1.6);
   -webkit-backdrop-filter: blur(30px) saturate(1.6);
-  border: 1px solid;
-  border-image: linear-gradient(135deg, var(--glass-border-from), var(--glass-border-to)) 1;
+  border: 1px solid var(--clr-glass-border);
   box-shadow:
     0 16px 48px var(--glass-glow),
     inset 0 1px 0 var(--glass-inner);
