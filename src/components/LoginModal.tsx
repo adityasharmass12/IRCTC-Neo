@@ -236,11 +236,14 @@ export default function LoginModal({
         storeTokens(data.access, data.refresh);
         onLoginSuccess();
       } else if (res.status === 401 || res.status === 400) {
-        const data = await res.json().catch(() => ({}));
+        let data: any = {};
+        try { data = await res.json(); } catch (e) {}
         const msg = data?.detail || data?.non_field_errors?.[0] || "Invalid username or password.";
         setAuthError(msg);
       } else {
-        setAuthError("Something went wrong. Please try again later.");
+        let text = "";
+        try { text = await res.text(); } catch(e) {}
+        setAuthError(`Server Error (${res.status}): ${text.substring(0, 60)}...`);
       }
     } catch {
       setAuthError("Cannot connect to server. Please try again later.");
@@ -661,15 +664,22 @@ export default function LoginModal({
                             setSuccessMessage("Account created! Please log in.");
                             goTo("login", -1);
                           } else {
-                            const data = await res.json().catch(() => ({}));
-                            const msg =
-                              data?.username?.[0] ||
-                              data?.email?.[0] ||
-                              data?.password?.[0] ||
-                              data?.password_confirm?.[0] ||
-                              data?.detail ||
-                              "Registration failed. Please try again.";
-                            setAuthError(msg);
+                            let data: any = {};
+                            try { data = await res.json(); } catch (e) {}
+                            if (Object.keys(data).length > 0) {
+                              const msg =
+                                data?.username?.[0] ||
+                                data?.email?.[0] ||
+                                data?.password?.[0] ||
+                                data?.password_confirm?.[0] ||
+                                data?.detail ||
+                                "Registration failed. Please check your inputs.";
+                              setAuthError(msg);
+                            } else {
+                              let text = "";
+                              try { text = await res.text(); } catch(e) {}
+                              setAuthError(`Server Error (${res.status}): ${text.substring(0, 60)}...`);
+                            }
                           }
                         } catch {
                           setAuthError("Cannot connect to server. Please try again later.");

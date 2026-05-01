@@ -211,7 +211,7 @@ export default function BookingEngine() {
   const [chartsModalOpen, setChartsModalOpen] = useState(false);
   const { toasts, show: showToast, remove: removeToast } = useToasts();
   const { t } = useLang();
-  // Build tabs array from translations
+ 
   const tabs = [
     { id: "book" as TabId,   label: t.bookTicket,     icon: tabIcons.book    },
     { id: "pnr" as TabId,    label: t.pnrStatus,      icon: tabIcons.pnr     },
