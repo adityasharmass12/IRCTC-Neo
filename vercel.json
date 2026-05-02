@@ -1,4 +1,5 @@
 {
+    "buildCommand": "npm run build && python backend/build_and_migrate.py",
     "experimentalServices": {
         "frontend": {
             "routePrefix": "/",
