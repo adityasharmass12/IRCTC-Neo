@@ -1,14 +1,5 @@
-/**
- * Station Aliases & Waitlist Intelligence Utilities
- * Provides smart station matching and waitlist confirmation probability calculations
- */
 
-/**
- * Station alias map for smart autocomplete
- * Maps common names, historical names, and colloquial references to station codes
- */
 export const stationAliasMap: Record<string, { code: string; primary: string }> = {
-  // Major metros with historical names
   bombay: { code: "BCT", primary: "Mumbai Central" },
   mumbai: { code: "BCT", primary: "Mumbai Central" },
   dadar: { code: "DR", primary: "Dadar" },
@@ -62,9 +53,6 @@ export const stationAliasMap: Record<string, { code: string; primary: string }> 
   hwh: { code: "HWH", primary: "Howrah" },
 };
 
-/**
- * Intelligent station search that handles aliases, partial matches, and typos
- */
 export function searchStationWithAliases(
   query: string,
   stations: Array<{ code: string; name: string; city: string }>
@@ -75,15 +63,13 @@ export function searchStationWithAliases(
   
   const results = [];
   const seen = new Set<string>();
-  
-  // 1. Exact code match (fastest, highest priority)
+
   const exactCodeMatch = stations.find((s) => s.code.toLowerCase() === q);
   if (exactCodeMatch && !seen.has(exactCodeMatch.code)) {
     results.push({ ...exactCodeMatch, confidence: 1.0 });
     seen.add(exactCodeMatch.code);
   }
   
-  // 2. Alias match (e.g., "Bombay" → "Mumbai Central")
   if (stationAliasMap[q]) {
     const aliasMatch = stations.find((s) => s.code === stationAliasMap[q].code);
     if (aliasMatch && !seen.has(aliasMatch.code)) {
@@ -92,7 +78,6 @@ export function searchStationWithAliases(
     }
   }
   
-  // 3. Prefix match on station name (e.g., "Mum" → "Mumbai Central")
   const namePrefix = stations.filter((s) =>
     s.name.toLowerCase().startsWith(q) && !seen.has(s.code)
   );
@@ -100,8 +85,7 @@ export function searchStationWithAliases(
     results.push({ ...s, confidence: 0.9 });
     seen.add(s.code);
   });
-  
-  // 4. Prefix match on city (e.g., "Mum" → stations in Mumbai)
+
   const cityPrefix = stations.filter((s) =>
     s.city.toLowerCase().startsWith(q) && !seen.has(s.code)
   );
@@ -109,8 +93,7 @@ export function searchStationWithAliases(
     results.push({ ...s, confidence: 0.8 });
     seen.add(s.code);
   });
-  
-  // 5. Substring match anywhere in name or city
+
   const substring = stations.filter((s) =>
     (s.name.toLowerCase().includes(q) || s.city.toLowerCase().includes(q)) &&
     !seen.has(s.code)
@@ -122,11 +105,6 @@ export function searchStationWithAliases(
   
   return results;
 }
-
-/**
- * Waitlist confirmation probability data (mock for now, would come from backend)
- * Structure: train code → class → confidence data
- */
 export const waitlistProbabilityData: Record<
   string,
   Record<string, { percentage: number; daysToConfirm: number }>
@@ -149,26 +127,19 @@ export const waitlistProbabilityData: Record<
     "3A": { percentage: 70, daysToConfirm: 4 },
     SL: { percentage: 58, daysToConfirm: 6 },
   },
-};
-
-/**
- * Get waitlist confirmation probability for a specific train/class combination
- * Returns percentage and expected days to confirmation
- */
+}
 export function getWaitlistProbability(trainCode: string, classCode: string) {
   const trainData = waitlistProbabilityData[trainCode];
   if (!trainData) {
-    // Default conservative estimate for unknown trains
+
     return { percentage: 45, daysToConfirm: 7, confidence: "LOW" };
   }
   
   const classData = trainData[classCode];
   if (!classData) {
-    // Default for unknown class
     return { percentage: 50, daysToConfirm: 5, confidence: "MEDIUM" };
   }
   
-  // Determine confidence level based on percentage
   const confidence =
     classData.percentage >= 80 ? "HIGH" :
     classData.percentage >= 60 ? "MEDIUM" : "LOW";
@@ -180,9 +151,7 @@ export function getWaitlistProbability(trainCode: string, classCode: string) {
   };
 }
 
-/**
- * Generate a human-readable message for waitlist probability
- */
+
 export function getWaitlistMessage(percentage: number): string {
   if (percentage >= 80) return "Very likely to confirm";
   if (percentage >= 60) return "Likely to confirm";
@@ -190,18 +159,14 @@ export function getWaitlistMessage(percentage: number): string {
   return "Unlikely to confirm";
 }
 
-/**
- * Generate gradient colors for waitlist badge based on probability
- * Orange → Yellow → Green as probability increases
- */
 export function getWaitlistGradient(
   percentage: number
 ): { from: string; to: string } {
   if (percentage >= 80) {
-    return { from: "#4ade80", to: "#22c55e" }; // Green
+    return { from: "#4ade80", to: "#22c55e" };
   }
   if (percentage >= 60) {
-    return { from: "#fbbf24", to: "#f59e0b" }; // Amber
+    return { from: "#fbbf24", to: "#f59e0b" };
   }
-  return { from: "#fb923c", to: "#f97316" }; // Orange
+  return { from: "#fb923c", to: "#f97316" };
 }

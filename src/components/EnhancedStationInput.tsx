@@ -20,13 +20,6 @@ interface StationInputProps {
   id: string;
 }
 
-/**
- * Enhanced StationInput with Smart Autocomplete
- * Features:
- * - Alias recognition ("Bombay" → "Mumbai Central")
- * - Partial matching
- * - Confidence scoring for relevance
- */
 export default function EnhancedStationInput({
   label,
   value,

@@ -66,7 +66,6 @@ function createMockPassenger(): Passenger {
   };
 }
 
-// ── Glassmorphic Input Field ──────────────────────────────────────────────────
 function GlassInput({
   label,
   value,
@@ -130,8 +129,6 @@ function GlassInput({
     </div>
   );
 }
-
-// ── Glassmorphic Select Dropdown ───────────────────────────────────────────────
 function GlassSelect({
   label,
   value,
@@ -224,8 +221,6 @@ function GlassSelect({
     </div>
   );
 }
-
-// ── Checkbox ───────────────────────────────────────────────────────────────────
 function GlassCheckbox({
   label,
   sublabel,
@@ -280,8 +275,6 @@ function GlassCheckbox({
     </label>
   );
 }
-
-// ── Section Card ───────────────────────────────────────────────────────────────
 function SectionCard({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) {
   return (
     <div
@@ -317,8 +310,6 @@ function SectionCard({ title, icon: Icon, children }: { title: string; icon: Rea
     </div>
   );
 }
-
-// ── Summary Card ───────────────────────────────────────────────────────────────
 function SummaryCard({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) {
   return (
     <div
@@ -349,8 +340,6 @@ function SummaryCard({ title, icon: Icon, children }: { title: string; icon: Rea
     </div>
   );
 }
-
-// ── Fare Row ───────────────────────────────────────────────────────────────────
 function FareRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between py-2">
@@ -363,8 +352,6 @@ function FareRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-
-// ── Main Component ─────────────────────────────────────────────────────────────
 export default function BookingCheckoutModal({
   isOpen,
   onClose,

@@ -134,7 +134,7 @@ export default function Footer() {
               className="text-xs text-center sm:text-left"
               style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}
             >
-              © {new Date().getFullYear()} IRCTC — Indian Railway Catering and Tourism Corporation Ltd. All rights reserved.
+              © {new Date().getFullYear()} IRCTC, Indian Railway Catering and Tourism Corporation Ltd. All rights reserved.
             </p>
             <div className="flex items-center gap-3">
               <span className="text-xs" style={{ fontFamily: "var(--font-ui)", color: "var(--clr-muted)" }}>

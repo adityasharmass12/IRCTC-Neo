@@ -8,12 +8,6 @@ interface FlexibleDateCalendarProps {
   onDateChange: (date: string) => void;
   isEnabled: boolean;
 }
-
-/**
- * FlexibleDateCalendar Component
- * Shows a horizontally scrolling 7-day calendar view
- * Helps users explore availability across nearby dates with one glance
- */
 export default function FlexibleDateCalendar({
   selectedDate,
   onDateChange,
@@ -21,13 +15,12 @@ export default function FlexibleDateCalendar({
 }: FlexibleDateCalendarProps) {
   const [baseDate, setBaseDate] = useState<Date>(() => {
     const d = new Date();
-    d.setDate(d.getDate() + 1); // Start from tomorrow
+    d.setDate(d.getDate() + 1);
     return d;
   });
 
   const [scrollPosition, setScrollPosition] = useState(0);
 
-  // Generate 30 days starting from baseDate
   const generateDates = () => {
     const dates = [];
     for (let i = 0; i < 30; i++) {

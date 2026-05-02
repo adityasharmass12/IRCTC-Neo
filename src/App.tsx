@@ -237,21 +237,42 @@ function AppContent() {
         </main>
         <Footer />
         <p className="footer-hint">
-          © {new Date().getFullYear()} IRCTC — Indian Railway Catering and Tourism Corporation Ltd. · A Government of India Enterprise
+          © {new Date().getFullYear()} IRCTC, Indian Railway Catering and Tourism Corporation Ltd. · A Government of India Enterprise
         </p>
       </div>
     </>
   );
 }
 import AccountDashboard from "@/components/AccountDashboard";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+
+function ScrollToHash() {
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash) {
+      setTimeout(() => {
+        const id = location.hash.replace("#", "");
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    }
+  }, [location]);
+  return null;
+}
 
 export default function App() {
-  const isAccountRoute = window.location.pathname === "/account";
-
   return (
     <ThemeProvider>
       <LanguageProvider>
-        {isAccountRoute ? <AccountDashboard /> : <AppContent />}
+        <BrowserRouter>
+          <ScrollToHash />
+          <Routes>
+            <Route path="/" element={<AppContent />} />
+            <Route path="/account" element={<AccountDashboard />} />
+          </Routes>
+        </BrowserRouter>
       </LanguageProvider>
     </ThemeProvider>
   );

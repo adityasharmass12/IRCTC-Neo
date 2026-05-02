@@ -217,7 +217,7 @@ export default function LoginModal({
     setAuthError(null);
     setSuccessMessage(null);
   }, []);
-  // ── JWT Sign-In ──────────────────────────────────────
+
   const handleSignIn = useCallback(async () => {
     if (!username.trim() || !password.trim()) {
       setAuthError("Please enter both username and password.");

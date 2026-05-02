@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
   Sun, Moon, Menu, X, User, Globe, ChevronDown, LogOut,
   UserCircle, Receipt, XCircle, Settings, Train, Wallet, Bell, ChevronRight, MapPin, Clock
@@ -58,12 +59,12 @@ export default function Navbar() {
     };
   }, []);
   const navLinks = [
-    { label: t.bookTicket,    href: "#booking" },
-    { label: t.pnrStatus,     href: "#booking" },
-    { label: t.trainSchedule, href: "#" },
-    { label: t.tourism,       href: "#services" },
-    { label: t.eCatering,     href: "#services" },
-    { label: t.help,          href: "#" },
+    { label: t.bookTicket,    href: "/#booking" },
+    { label: t.pnrStatus,     href: "/#booking" },
+    { label: t.trainSchedule, href: "/#" },
+    { label: t.tourism,       href: "/#services" },
+    { label: t.eCatering,     href: "/#services" },
+    { label: t.help,          href: "/#" },
   ];
   return (
     <>
@@ -74,7 +75,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-[60px]">
             {}
-            <a href="#" className="flex items-center gap-2.5 group no-underline">
+            <Link to="/" className="flex items-center gap-2 group no-underline flex-shrink-0 mr-4">
               <img
                 src="/irctc-logo.png"
                 alt="IRCTC Logo"
@@ -90,11 +91,11 @@ export default function Navbar() {
                 </span>
                 {}
                 <span
-                  className="text-[9px] italic mt-1.5"
+                  className="text-[9px] italic mt-1.5 whitespace-nowrap hidden 2xl:block"
                   style={{
                     fontFamily: "\"Sora\", sans-serif",
                     color: "var(--clr-muted)",
-                    letterSpacing: "0.18em",
+                    letterSpacing: "0.05em",
                     fontStyle: "italic",
                     lineHeight: 1,
                   }}
@@ -102,27 +103,27 @@ export default function Navbar() {
                   Lifeline of the nation
                 </span>
               </div>
-            </a>
+            </Link>
             {}
-            <div className="hidden lg:flex items-center gap-1">
+            <div className="hidden lg:flex items-center gap-0.5">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
-                  href={link.href}
+                  to={link.href}
                   className="nav-link"
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
             </div>
             {}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               {}
               <LiveClock />
               {}
               <motion.button
                 onClick={toggleLang}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-all cursor-pointer"
+                className="hidden sm:flex items-center gap-1 px-2 py-1.5 text-[11px] font-medium rounded-md border transition-all cursor-pointer"
                 style={{
                   fontFamily: "var(--font-ui)",
                   color: "var(--clr-muted)",
@@ -157,17 +158,28 @@ export default function Navbar() {
               {}
               <button
                 onClick={toggleTheme}
-                className="w-8 h-8 flex items-center justify-center rounded-md transition-all"
-                style={{ color: "var(--clr-muted)" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--clr-primary)")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "var(--clr-muted)")}
-                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+                className="group relative w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 cursor-pointer overflow-hidden flex-shrink-0"
+                style={{
+                  background: theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                  border: "1px solid var(--clr-border)",
+                }}
               >
-                {theme === "dark" ? (
-                  <Sun className="w-4 h-4" />
-                ) : (
-                  <Moon className="w-4 h-4" />
-                )}
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-indigo-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={theme}
+                    initial={{ y: 8, opacity: 0, rotate: -20 }}
+                    animate={{ y: 0, opacity: 1, rotate: 0 }}
+                    exit={{ y: -8, opacity: 0, rotate: 20 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                  >
+                    {theme === "dark" ? (
+                      <Sun className="w-5 h-5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" />
+                    ) : (
+                      <Moon className="w-5 h-5 text-blue-600 drop-shadow-[0_0_8px_rgba(37,99,235,0.2)]" />
+                    )}
+                  </motion.div>
+                </AnimatePresence>
               </button>
               {}
               {!isLoggedIn ? (
@@ -188,10 +200,10 @@ export default function Navbar() {
                   <User className="w-4 h-4" />{t.login}
                 </button>
               ) : (
-                <div className="hidden sm:flex items-center gap-2">
-                  <a
-                    href="/account"
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md text-white transition-all cursor-pointer border-none no-underline"
+                <div className="hidden sm:flex items-center gap-3">
+                  <Link
+                    to="/account"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold rounded-md text-white transition-all cursor-pointer border-none no-underline"
                     style={{
                       fontFamily: "var(--font-ui)",
                       background: "var(--clr-primary)",
@@ -205,25 +217,14 @@ export default function Navbar() {
                   >
                     <User className="w-4 h-4" />
                     <span>Account</span>
-                  </a>
+                  </Link>
                   <button
                     onClick={() => setLogoutConfirmOpen(true)}
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-md transition-all cursor-pointer"
-                    style={{
-                      fontFamily: "var(--font-ui)",
-                      color: "#ef4444",
-                      background: "transparent",
-                      border: "1px solid rgba(239, 68, 68, 0.3)",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "transparent";
-                    }}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 text-[13px] font-medium rounded-lg transition-colors cursor-pointer border-none whitespace-nowrap text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 bg-transparent flex-shrink-0"
+                    style={{ fontFamily: "var(--font-ui)" }}
                   >
                     <LogOut className="w-4 h-4" />
-                    <span>Log out</span>
+                    <span>Logout</span>
                   </button>
                 </div>
               )}
@@ -262,20 +263,23 @@ export default function Navbar() {
             >
               <div className="p-4 space-y-1">
                 {navLinks.map((link, i) => (
-                  <motion.a
+                  <motion.div
                     key={link.label}
-                    href={link.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors"
-                    style={{ fontFamily: "var(--font-ui)", color: "var(--clr-text)" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "var(--clr-primary-dim)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.04 }}
                   >
-                    {link.label}
-                  </motion.a>
+                    <Link
+                      to={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors"
+                      style={{ fontFamily: "var(--font-ui)", color: "var(--clr-text)" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--clr-primary-dim)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.div>
                 ))}
                 <div className="pt-3" style={{ borderTop: "1px solid var(--clr-border)" }}>
                   {!isLoggedIn ? (
@@ -288,14 +292,14 @@ export default function Navbar() {
                     </button>
                   ) : (
                     <div className="flex flex-col gap-2">
-                      <a
-                        href="/account"
+                      <Link
+                        to="/account"
                         className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-lg text-white cursor-pointer border-none no-underline"
                         style={{ fontFamily: "var(--font-ui)", background: "var(--clr-primary)" }}
                         onClick={() => setMobileOpen(false)}
                       >
                         <User className="w-4 h-4" />Account
-                      </a>
+                      </Link>
                       <button
                         onClick={() => { setLogoutConfirmOpen(true); setMobileOpen(false); }}
                         className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold rounded-lg cursor-pointer transition-colors"

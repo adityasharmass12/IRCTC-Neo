@@ -18,10 +18,10 @@ export default function LiveClock() {
   if (hours === 0) hours = 12;
   const mins = time.getMinutes().toString().padStart(2, "0");
   const secs = time.getSeconds().toString().padStart(2, "0");
-  const formatted = `${day}, ${date} ${month} | ${hours}:${mins}:${secs} ${ampm}`;
+  const formatted = `${day}, ${date} ${month} ${hours}:${mins}:${secs} ${ampm}`;
   return (
     <div
-      className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium tracking-wide"
+      className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium tracking-wide whitespace-nowrap"
       style={{
         fontFamily: "var(--font-ui)",
         color: "var(--clr-muted)",

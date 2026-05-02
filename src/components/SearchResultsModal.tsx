@@ -6,6 +6,8 @@ import {
 import { TRAIN_TYPES, type TrainType, type TrainResult } from "@/data/mockData";
 import { cn } from "@/lib/utils";
 import WaitlistIntelligenceBadge from "./WaitlistIntelligenceBadge";
+import LoginModal from "./LoginModal";
+import { getAuthToken } from "./Navbar";
 interface SearchResultsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -55,6 +57,12 @@ export default function SearchResultsModal({
 }: SearchResultsModalProps) {
   const [filter, setFilter] = useState<TrainType>("all");
   const [sort, setSort] = useState<"time" | "price" | "duration">("time");
+  const [loginOpen, setLoginOpen] = useState(false);
+
+  const isAuthenticated = !!getAuthToken();
+  const handleAuthRequired = useCallback(() => {
+    setLoginOpen(true);
+  }, []);
 
   // Escape key listener
   useEffect(() => {
@@ -236,18 +244,40 @@ export default function SearchResultsModal({
                     </div>
                   )}
                   {filtered.map((train) => (
-                    <TrainCard key={train.id} train={train} onBook={onBook} />
+                    <TrainCard 
+                      key={train.id} 
+                      train={train} 
+                      onBook={onBook} 
+                      isAuthenticated={isAuthenticated}
+                      onAuthRequired={handleAuthRequired}
+                    />
                   ))}
                 </div>
               )}
             </div>
           </motion.div>
+
+          <LoginModal 
+            isOpen={loginOpen} 
+            onClose={() => setLoginOpen(false)} 
+            onLoginSuccess={() => setLoginOpen(false)} 
+          />
         </div>
       )}
     </AnimatePresence>
   );
 }
-function TrainCard({ train, onBook }: { train: TrainResult; onBook: (train: TrainResult, classCode: string) => void }) {
+function TrainCard({ 
+  train, 
+  onBook,
+  isAuthenticated,
+  onAuthRequired
+}: { 
+  train: TrainResult; 
+  onBook: (train: TrainResult, classCode: string) => void;
+  isAuthenticated: boolean;
+  onAuthRequired: () => void;
+}) {
   const [expanded, setExpanded] = useState(false);
   const typeLabel: Record<string, string> = {
     rajdhani: "Rajdhani",
@@ -425,7 +455,20 @@ function TrainCard({ train, onBook }: { train: TrainResult; onBook: (train: Trai
                       disabled={cls.available === "full"}
                       onClick={(e) => {
                         e.stopPropagation();
-                        onBook(train, cls.code);
+                        if (!isAuthenticated) {
+                          onAuthRequired();
+                          const toast = document.createElement("div");
+                          toast.className = "fixed bottom-4 right-4 bg-red-500 text-white px-4 py-3 rounded-lg shadow-2xl z-[9999] transition-opacity duration-300 font-medium";
+                          toast.style.fontFamily = "var(--font-ui)";
+                          toast.innerText = "Please log in to book tickets.";
+                          document.body.appendChild(toast);
+                          setTimeout(() => {
+                            toast.style.opacity = "0";
+                            setTimeout(() => toast.remove(), 300);
+                          }, 3000);
+                        } else {
+                          onBook(train, cls.code);
+                        }
                       }}
                     >
                       {cls.available === "full" ? "Sold Out" : "Book Now"}

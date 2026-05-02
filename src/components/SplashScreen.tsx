@@ -99,7 +99,7 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
             animate={{ opacity: 0.6 }}
             transition={{ delay: 0.6 }}
           >
-            A Government of India Enterprise — Ministry of Railways
+            A Government of India Enterprise · Ministry of Railways
           </motion.p>
         </motion.div>
       )}
