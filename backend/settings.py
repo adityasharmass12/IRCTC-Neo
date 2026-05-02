@@ -1,5 +1,4 @@
 import os
-import dj_database_url
 from datetime import timedelta
 from pathlib import Path
 
@@ -59,10 +58,12 @@ TEMPLATES = [
 WSGI_APPLICATION = "wsgi.application"
 
 # Database: Use DATABASE_URL (PostgreSQL) on Vercel, SQLite locally
-if os.environ.get("DATABASE_URL"):
+_database_url = os.environ.get("DATABASE_URL")
+if _database_url:
+    import dj_database_url
     DATABASES = {
         "default": dj_database_url.config(
-            default=os.environ["DATABASE_URL"],
+            default=_database_url,
             conn_max_age=600,
             conn_health_checks=True,
             ssl_require=True,

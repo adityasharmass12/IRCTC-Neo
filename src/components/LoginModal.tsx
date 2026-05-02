@@ -668,17 +668,17 @@ export default function LoginModal({
                             try { data = await res.json(); } catch (e) {}
                             if (Object.keys(data).length > 0) {
                               const msg =
+                                data?.error ||
                                 data?.username?.[0] ||
                                 data?.email?.[0] ||
                                 data?.password?.[0] ||
                                 data?.password_confirm?.[0] ||
                                 data?.detail ||
+                                data?.non_field_errors?.[0] ||
                                 "Registration failed. Please check your inputs.";
                               setAuthError(msg);
                             } else {
-                              let text = "";
-                              try { text = await res.text(); } catch(e) {}
-                              setAuthError(`Server Error (${res.status}): ${text.substring(0, 60)}...`);
+                              setAuthError(`Server Error (${res.status}). The backend may not have a database configured.`);
                             }
                           }
                         } catch {
